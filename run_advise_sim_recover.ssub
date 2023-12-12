@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+#SBATCH --partition=c2_cpu
+#SBATCH --ntasks=1
+#SBATCH --mem=12000
+#SBATCH --nodes=1
+#SBATCH --workdir=/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/recoverability/recoverability_scripts
+#SBATCH --begin=now
+#SBATCH --job-name=advise_param_recoverability
+#
+#################################################
+RESULTS=$1
+export RESULTS
+
+ID=$2
+export ID
+
+
+PHA=$3
+export PHA
+
+OMEGA_ADVISOR_WIN=$4
+export OMEGA_ADVISOR_WIN
+
+OMEGA_ADVISOR_LOSS=$5
+export OMEGA_ADVISOR_LOSS
+
+module load matlab/2022a
+
+
+run_file='/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/recoverability/recoverability_scripts/main_advise_recover_anal_cluster.m'
+matlab -nodisplay -nosplash < ${run_file}
