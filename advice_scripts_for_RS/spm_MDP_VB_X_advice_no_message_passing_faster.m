@@ -236,8 +236,6 @@ try, omega_advisor_win = MDP(1).omega_advisor_win; catch, omega_advisor_win = 1;
 try, omega_advisor_loss = MDP(1).omega_advisor_loss; catch, omega_advisor_loss = 1;end
 try, omega_context = MDP(1).omega_context; catch, omega_context = .8;end
 try, la = MDP(1).la;           catch, la = .1;end
-try, novelty_scalar = MDP(1).novelty_scalar;           catch, novelty_scalar = .25;end
-
 %try, eff = MDP(1).eff;         catch, eff = 1;end
 % preclude precision updates for moving policies
 %--------------------------------------------------------------------------
@@ -883,7 +881,6 @@ for t = 1:T
                     
                     % Bayesian surprise about inital conditions
                     %------------------------------------------------------
-                    % novelty for context
                     if isfield(MDP,'d')
                         for f = 1:Nf(m)
                             Q(k) = Q(k) - spm_dot(wD{m,f},x{m,f}(:,1,k));
@@ -907,7 +904,6 @@ for t = 1:T
                         
                         % Bayesian surprise about states
                         %--------------------------------------------------
-                        % epistemic term
                         Q(k) = Q(k) + spm_MDP_G(A(m,:),xq(m,:));
                         
                         for g = 1:Ng(m)
@@ -919,10 +915,8 @@ for t = 1:T
                             
                             % Bayesian surprise about parameters
                             %----------------------------------------------
-                            % novelty for advisor
-                            % ARTIFICIALLY SCALED DOWN BY .5
                             if isfield(MDP,'a')
-                                Q(k) = Q(k) - novelty_scalar*spm_dot(wA{m,g},{qo xq{m,:}});
+                                Q(k) = Q(k) - spm_dot(wA{m,g},{qo xq{m,:}});
                             end
                         end
                     end
@@ -953,8 +947,8 @@ for t = 1:T
                   
                     % posterior and prior beliefs about policies
                     %------------------------------------------------------
-                    qu = spm_softmax(qE{m} + (1/beta)*Q);
-                    pu = spm_softmax(qE{m} + (1/beta)*Q);
+                    qu = spm_softmax(qE{m} + Q);
+                    pu = spm_softmax(qE{m} + Q);
                     
                     % precision (w) with free energy gradients (v = -dF/dw)
                     %------------------------------------------------------
@@ -1022,10 +1016,7 @@ for t = 1:T
                 Pu    = zeros([Nu(m,:),1]);
                 for i = 1:Np(m)
                     sub        = num2cell(V{m}(t,i,:));
-                    % instead of adding probs changed to taking max of
-                    % probs
-                    %Pu(sub{:}) = Pu(sub{:}) + u{m}(i,t);
-                    Pu(sub{:}) = max(Pu(sub{:}),u{m}(i,t));
+                    Pu(sub{:}) = Pu(sub{:}) + u{m}(i,t);
                 end
                 
                 % action selection (softmax function of action potential)

@@ -2,15 +2,14 @@ dbstop if error
 rng('default');
 
 
-SIM = false; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
-FIT = true; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
-plot = true;
+SIM = true; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
+FIT = false; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
 
 % Setup directories based on system
 if ispc
     root = 'L:';
     results_dir = 'L:/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits';
-    FIT_SUBJECT = 'BW521';
+    FIT_SUBJECT = 'BW281';
     INPUT_DIRECTORY = [root '/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_12-8-23'];  % Where the subject file is located
 
 else
@@ -29,31 +28,30 @@ fprintf(FIT_SUBJECT);
 
 addpath([root '/rsmith/all-studies/util/spm12/']);
 addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
-addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
 
 % Define priors and parameter sequences
-priors = struct('p_ha', 0.7, 'omega_advisor_win', 0.9, 'omega_advisor_loss', .7, 'omega_context', .5);
+priors = struct('p_ha', 0.75, 'omega_advisor_win', 0.9, 'omega_advisor_loss', .9, 'omega_context', .9);
 field = fieldnames(priors);
 
 
 if SIM
     %alpha = 7; % bound between .5 and 30
     %rs = 4;
-    p_ha = .5;
+    p_ha = .7;
     %p_ha = 0.8368249 ; % bound between .01 and .99
    % prior_a = 4;
     %prior_a =  4.739768; % sim between 3 and __
-    omega_context = 0.5;
+    omega_context = 0.7;
     %omega = 0.6844748 ; % .1 to 1
     %'eff', [1]; 
     %rs = 3.5; % 0 to 4
-    omega_advisor_win = .6;
-    omega_advisor_loss = .7;
+    omega_advisor_win = .9;
+    omega_advisor_loss = .9;
     %omega_context = .9;
     %prior_a = 4;
     gen_params = struct('omega_context', omega_context, 'p_ha', p_ha, 'omega_advisor_win', omega_advisor_win, 'omega_advisor_loss', omega_advisor_loss);
     
-    [gen_data] = advise_sim(gen_params, plot);
+    [gen_data] = advise_sim(gen_params);
 end
     
 if FIT
@@ -61,7 +59,7 @@ if FIT
         fit_results = advise_sim_fit(gen_data, field, priors);
     else
     
-        fit_results = Advice_fit(FIT_SUBJECT, INPUT_DIRECTORY, priors, field, plot);
+        fit_results = Advice_fit(FIT_SUBJECT, INPUT_DIRECTORY, priors, field);
 
         % saves the matlab results
         % save([results_dir 'output_invitation_' subject '.mat'], 'fit_results');

@@ -236,6 +236,7 @@ L = 0;
 for idx_block = 1:num_blocks
     priors = params;
     MDP     = advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),priors);
+    
     %[MDP(1:block_size)]   = deal(mdp_block);
     if (num_trials == 1)
         outcomes = U;
@@ -256,6 +257,7 @@ for idx_block = 1:num_blocks
     
     %MDP  = spm_MDP_VB_X_advice(MDP);
     MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
+    %MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
 
     for j = 1:block_size
         if actions{j}(2,1) ~= 2

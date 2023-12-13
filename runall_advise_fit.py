@@ -18,7 +18,7 @@ with open(subject_list_path) as infile:
         if 'ID' not in line:
             subjects.append(line.strip())
 
-ssub_path = '/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/scripts/run_advise_fit.ssub'
+ssub_path = '/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/current_scripts/run_advise_fit.ssub'
 
 for subject in subjects:
     stdout_name = f"{results}/logs/{subject}-%J.stdout"
@@ -30,4 +30,4 @@ for subject in subjects:
     print(f"SUBMITTED JOB [{jobname}]")
 
 
-    ###python3 runall_advise_fit.py /media/labs/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_12-8-23 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits
+    ###python3 runall_advise_fit.py /media/labs/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_12-8-23 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_three_omegas

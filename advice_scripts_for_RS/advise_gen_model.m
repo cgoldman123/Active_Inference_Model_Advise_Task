@@ -10,7 +10,7 @@ learn_a = 1;
 rs = 1;
 p_ha = priors.p_ha;
 % prior_a fixed at 4
-prior_a = 1;
+prior_a = 4;
 omega_context = priors.omega_context;
 omega_advisor_win = priors.omega_advisor_win;
 omega_advisor_loss = priors.omega_advisor_loss;
@@ -256,7 +256,7 @@ mdp(t).omega_advisor_win = omega_advisor_win;            % forgetting rate
 mdp(t).omega_advisor_loss = omega_advisor_loss;  
 mdp(t).omega_context = omega_context;  
 
-mdp(t).alpha = 4;            % action precision fixed at 1
+mdp(t).alpha = 4;            % action precision fixed at 4
 mdp(t).beta = beta;              % expected precision of expected free energy over policies
 mdp(t).erp = erp;                % degree of belief resetting at each timestep
 mdp(t).tau = tau;                % time constant for evidence accumulation

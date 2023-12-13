@@ -1,4 +1,4 @@
-function FinalResults = Advice_fit(subject,folder,priors,field, plot)
+function FinalResults = Advice_fit(subject,folder,priors,field)
 % Manipulate Data
 directory = dir(folder);
 index_array = find(arrayfun(@(n) contains(directory(n).name, [subject '-T0-__AT_R1-_BEH.csv']),1:numel(directory)));
@@ -70,29 +70,6 @@ for n = 1:size(resp,1)
 
 end
 
-
-
-
-% plotting
-    if plot
-        for idx_block = 1:floor(size(o,2)/30)
-            MDP     = advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),priors);
-                for idx_trial = 1:30
-                    MDP(idx_trial).o = o{idx_trial};
-                    MDP(idx_trial).u = u{idx_trial};
-                end
-
-            MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
-            % indicate which block to plot!!
-            if idx_block ==6
-                spm_figure('GetWin','Figure 4'); clf    % display behavior
-                spm_MDP_VB_game_tutorial(MDP); 
-
-            end
-        end
-    end
-
-
 %     MDP = advise_gen_model(trialinfo,priors);
 
 %     for bb = 1:size(MDP,2)
@@ -111,20 +88,6 @@ end
     DCM.priors = priors;
     DCM.mode            = 'fit';
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     DCM        = advice_inversion(DCM);   % Invert the model
  %% 6.3 Check deviation of prior and posterior means & posterior covariance:
     %==========================================================================

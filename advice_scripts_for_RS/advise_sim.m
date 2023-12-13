@@ -1,5 +1,5 @@
 %% Step by step introduction to building and using active inference models
-function [gen_data] = advise_sim(priors, plot)
+function [gen_data] = advise_sim(priors)
 
 % rng('shuffle') % This sets the random number generator to produce a different 
 %                % random sequence each time, which leads to variability in 
@@ -16,7 +16,7 @@ function [gen_data] = advise_sim(priors, plot)
 load('trialinfo_forty_eighty.mat');
               
                
-Sim = 4;
+Sim = 1;
 
 if Sim ==1
     %% 3. Single trial simulations
@@ -62,10 +62,9 @@ elseif Sim == 4
     MDP = spm_MDP_VB_X_advice_no_message_passing_faster(mdp);
 
     % We can again visualize simulated neural responses
-    if plot
-        spm_figure('GetWin','Figure 4'); clf    % display behavior
-        spm_MDP_VB_game_tutorial(MDP); 
-    end
+    addpath 'L:\rsmith\lab-members\cgoldman\Active-Inference-Tutorial-Scripts-main'
+    spm_figure('GetWin','Figure 4'); clf    % display behavior
+    spm_MDP_VB_game_tutorial(MDP); 
 
     %mdp.la_true = la;   % Carries over true la value for use in estimation script
     %mdp.rs_true = rs;   % Carries over true rs value for use in estimation script
