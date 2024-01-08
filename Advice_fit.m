@@ -190,7 +190,9 @@ end
         elseif strcmp(field{i},'rs')
             posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
             prior.(field{i}) = exp(DCM.M.pE.(field{i}));        
-    
+        elseif strcmp(field{i},'novelty_scalar')
+            posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
+            prior.(field{i}) = exp(DCM.M.pE.(field{i}));      
         end
     end
     
@@ -284,12 +286,11 @@ end
 
     end
 
-
-    avg_act_prob_time1 = sum(act_prob_time1)/length(act_prob_time1);
-    avg_act_prob_time2 = sum(act_prob_time2)/length(act_prob_time2);
-    avg_model_acc_time1   = sum(model_acc_time1)/length(model_acc_time1);
-    avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
-
+    accuracy_info.avg_act_prob_time1 = sum(act_prob_time1)/length(act_prob_time1);
+    accuracy_info.avg_act_prob_time2 = sum(act_prob_time2)/length(act_prob_time2);
+    accuracy_info.avg_model_acc_time1   = sum(model_acc_time1)/length(model_acc_time1);
+    accuracy_info.avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
+    accuracy_info.times_chosen_advisor = length(model_acc_time2);
    
-    FinalResults = [{["fitted " subject]} prior posteriors DCM avg_act_prob_time1 avg_act_prob_time2 avg_model_acc_time1 avg_model_acc_time2];
+    FinalResults = [{["fitted " subject]} prior posteriors DCM accuracy_info];
 end

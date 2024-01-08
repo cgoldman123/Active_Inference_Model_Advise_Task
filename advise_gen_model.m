@@ -3,17 +3,18 @@ function mdp = advise_gen_model(trialinfo,priors)
 p_lb = .5; % left better prob in d
 prior_d = 1; % prior d counts
 learn_a = 1;
-
+rs = 1;
+prior_a = 1;
 %la = priors.la;
 %eff = priors.eff;
-%alpha = priors.alpha;
-rs = 1;
+
+
 p_ha = priors.p_ha;
-% prior_a fixed at 4
-prior_a = 1;
+alpha = priors.alpha;
 omega_context = priors.omega_context;
 omega_advisor_win = priors.omega_advisor_win;
 omega_advisor_loss = priors.omega_advisor_loss;
+novelty_scalar = priors.novelty_scalar;
 %eta = priors.eta;
 %eta_win = priors.eta_win;
 %eta_loss = priors.eta_loss;
@@ -256,7 +257,7 @@ mdp(t).omega_advisor_win = omega_advisor_win;            % forgetting rate
 mdp(t).omega_advisor_loss = omega_advisor_loss;  
 mdp(t).omega_context = omega_context;  
 
-mdp(t).alpha = 4;            % action precision fixed at 1
+mdp(t).alpha = alpha;            % action precision fixed at 1
 mdp(t).beta = beta;              % expected precision of expected free energy over policies
 mdp(t).erp = erp;                % degree of belief resetting at each timestep
 mdp(t).tau = tau;                % time constant for evidence accumulation
@@ -264,6 +265,7 @@ mdp(t).prior_d = prior_d;
 mdp(t).p_ha = p_ha;
 mdp(t).prior_a = prior_a;
 mdp(t).rs = rs;
+mdp(t).novelty_scalar = novelty_scalar;
 %mdp(t).la = la;
 %mdp(t).eff = eff;
 

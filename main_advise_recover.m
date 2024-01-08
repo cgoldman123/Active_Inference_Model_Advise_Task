@@ -1,17 +1,18 @@
+% main script for fitting/simming behavior on the advise task
 dbstop if error
 rng('default');
 
 
 SIM = false; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
 FIT = true; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
-plot = true;
+plot = false;
 
 % Setup directories based on system
 if ispc
     root = 'L:';
     results_dir = 'L:/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits';
     FIT_SUBJECT = 'BW521';
-    INPUT_DIRECTORY = [root '/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_12-8-23'];  % Where the subject file is located
+    INPUT_DIRECTORY = [root '/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_12-14-23'];  % Where the subject file is located
 
 else
     root = '/media/labs';
@@ -32,26 +33,19 @@ addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
 addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
 
 % Define priors and parameter sequences
-priors = struct('p_ha', 0.7, 'omega_advisor_win', 0.9, 'omega_advisor_loss', .7, 'omega_context', .5);
+priors = struct('p_ha', 0.75, 'omega_advisor_win', 0.5, 'omega_advisor_loss', .5, 'omega_context', .5, 'novelty_scalar', .1, 'alpha', 4);
 field = fieldnames(priors);
 
 
 if SIM
-    %alpha = 7; % bound between .5 and 30
-    %rs = 4;
-    p_ha = .5;
-    %p_ha = 0.8368249 ; % bound between .01 and .99
-   % prior_a = 4;
-    %prior_a =  4.739768; % sim between 3 and __
+    p_ha = .75;
     omega_context = 0.5;
-    %omega = 0.6844748 ; % .1 to 1
-    %'eff', [1]; 
-    %rs = 3.5; % 0 to 4
-    omega_advisor_win = .6;
-    omega_advisor_loss = .7;
-    %omega_context = .9;
-    %prior_a = 4;
-    gen_params = struct('omega_context', omega_context, 'p_ha', p_ha, 'omega_advisor_win', omega_advisor_win, 'omega_advisor_loss', omega_advisor_loss);
+    omega_advisor_win = .5;
+    omega_advisor_loss = .5;
+    novelty_scalar = .1;
+    alpha = 4;
+    
+    gen_params = struct('alpha', alpha, 'novelty_scalar', novelty_scalar', 'omega_context', omega_context, 'p_ha', p_ha, 'omega_advisor_win', omega_advisor_win, 'omega_advisor_loss', omega_advisor_loss);
     
     [gen_data] = advise_sim(gen_params, plot);
 end
@@ -72,16 +66,13 @@ if FIT
         res.omega_advisor_win = fit_results{3}.omega_advisor_win;
         res.omega_advisor_loss = fit_results{3}.omega_advisor_loss;
         res.omega_context = fit_results{3}.omega_context;
-        %res.prior_a = fit_results{3}.prior_a;
-        %res.omega_advisor_win = fit_results{3}.omega;
-        %res.rs = fit_results{3}.rs;
-        %res.alpha = fit_results{3}.alpha;
-        %res.la = fit_results{3}.la;
-        %res.eff = fit_results{3}(7);
-        res.avg_act_prob_time1 = fit_results{5};
-        res.avg_act_prob_time2 = fit_results{6};
-        res.avg_model_acc_time1 = fit_results{7};
-        res.avg_model_acc_time2 = fit_results{8};
+        res.alpha = fit_results{3}.alpha;
+        res.novelty_scalar = fit_results{3}.novelty_scalar;
+        res.avg_act_prob_time1 = fit_results{5}.avg_act_prob_time1;
+        res.avg_act_prob_time2 = fit_results{5}.avg_act_prob_time2;
+        res.avg_model_acc_time1 = fit_results{5}.avg_model_acc_time1;
+        res.avg_model_acc_time2 = fit_results{5}.avg_model_acc_time2;
+        res.times_chosen_advisor = fit_results{5}.times_chosen_advisor;
         
         writetable(struct2table(res), [results_dir '/advise_task-' FIT_SUBJECT '_fits.csv']);
     end

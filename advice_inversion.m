@@ -103,6 +103,9 @@ for i = 1:length(DCM.field)
          elseif strcmp(field,'eta_loss')
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;
+         elseif strcmp(field,'novelty_scalar')
+             pE.(field) = log(DCM.priors.(field));              % in log-space (to keep positive)
+             pC{i,i}    = prior_variance;
         elseif strcmp(field,'omega')
             %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
@@ -200,6 +203,8 @@ for i = 1:length(field)
             params.(field{i}) = exp(P.(field{i}));
         elseif strcmp(field{i},'prior_a')
             %params.(field{i}) = 30*(exp(P.(field{i})) + (.25/(30 - .25))) / (exp(P.(field{i})) + (.25/(30-.25) + 1));
+            params.(field{i}) = exp(P.(field{i}));
+        elseif strcmp(field{i},'novelty_scalar')
             params.(field{i}) = exp(P.(field{i}));
         end
     %end
