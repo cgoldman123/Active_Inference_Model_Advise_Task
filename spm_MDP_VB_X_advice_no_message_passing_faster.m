@@ -232,9 +232,9 @@ try, p_ha  = MDP(1).p_ha;  catch, p_ha  = .75;    end
 try, omega = MDP(1).omega; catch, omega = 1;    end % forgetting rate
 try, prior_a = MDP(1).prior_a; catch, prior_a = 1;end
 try, prior_d = MDP(1).prior_d; catch, prior_d = 1;end
-try, omega_advisor_win = MDP(1).omega_advisor_win; catch, omega_advisor_win = 1;end
-try, omega_advisor_loss = MDP(1).omega_advisor_loss; catch, omega_advisor_loss = 1;end
-try, omega_context = MDP(1).omega_context; catch, omega_context = .8;end
+try, omega_eta_advisor_win = MDP(1).omega_eta_advisor_win; catch, omega_eta_advisor_win = .5;end
+try, omega_eta_advisor_loss = MDP(1).omega_eta_advisor_loss; catch, omega_eta_advisor_loss = .5;end
+try, omega_eta_context = MDP(1).omega_eta_context; catch, omega_eta_context = .5;end
 try, la = MDP(1).la;           catch, la = .1;end
 try, novelty_scalar = MDP(1).novelty_scalar;           catch, novelty_scalar = .25;end
 
@@ -1121,9 +1121,13 @@ for m = 1:size(MDP,1)
                 if (advisor_chosen == 2 | advisor_chosen == 3)
                     
                     a_learned = (MDP(m).a{g}(:,:,2) - MDP.a_floor(:,:));
-                    a_learned(2, :) = a_learned(2, :) * omega_advisor_loss; 
-                    a_learned(3, :) = a_learned(3, :) * omega_advisor_win; 
-                    MDP(m).a{g}(:,:,2) = a_learned + MDP.a_floor(:,:) + da(:,:,2)*eta;
+                    a_learned(2, :) = a_learned(2, :) * omega_eta_advisor_loss; 
+                    a_learned(3, :) = a_learned(3, :) * omega_eta_advisor_win; 
+                    count = da(:,:,2);
+                    count(2,:) = 1 - omega_eta_advisor_loss;
+                    count(3,:) = 1 -omega_eta_advisor_win;
+                    MDP(m).a{g}(:,:,2) = MDP.a_floor(:,:) + a_learned + count;
+                    %MDP(m).a{g}(:,:,2) = a_learned + MDP.a_floor(:,:) + da(:,:,2)*eta;
   
                     
 %                     if (t_two_result == 2 | t_three_result == 2)
@@ -1187,8 +1191,8 @@ for m = 1:size(MDP,1)
             % update concentration param for context
             %MDP(m).d{f} = (MDP(m).d{f} - MDP(m).d_floor)*omega + MDP(m).d_floor + X{m,f}(i,1)*eta;
             % update belief at time 3
-            MDP(m).d{f} = (MDP(m).d{f} - MDP(m).d_floor)*omega_context + MDP(m).d_floor + X{m,f}(i,3)*eta;
-
+            %MDP(m).d{f} = (MDP(m).d{f} - MDP(m).d_floor)*omega_context + MDP(m).d_floor + X{m,f}(i,3)*eta;
+            MDP(m).d{f} = (MDP(m).d{f} - MDP(m).d_floor)*omega_eta_context + MDP(m).d_floor + X{m,f}(i,3)*(1-omega_eta_context);
 %             MDP(m).d{f}(i) = MDP(m).d{f}(i)*omega + X{m,f}(i,1)*eta;
 %                 for q = 1:2
 %                     if MDP(m).d{f}(q) < MDP.d_floor(q)

@@ -30,4 +30,4 @@ for subject in subjects:
     print(f"SUBMITTED JOB [{jobname}]")
 
 
-    ###python3 runall_advise_fit.py /media/labs/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_12-14-23 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_alpha_and_novelty_scalar
+    ###python3 runall_advise_fit.py /media/labs/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_1-8-24 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_combined_learning_forgetting

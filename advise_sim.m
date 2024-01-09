@@ -52,9 +52,9 @@ if Sim ==1
 elseif Sim == 4
     %% 4. Single block simulations
     % for games with 80 dinner size
-    mdp = advise_gen_model(trialinfo_forty_eighty(61:90,:), priors);
+    %mdp = advise_gen_model(trialinfo_forty_eighty(61:90,:), priors);
     %mdp = advise_gen_model(trialinfo_forty_eighty(181:210,:), priors);
-    
+    mdp = advise_gen_model(trialinfo_forty_eighty(1:30,:), priors);
     
     
     %MDP = spm_MDP_VB_X_advice(mdp);

@@ -110,15 +110,15 @@ for i = 1:length(DCM.field)
             %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;     
-        elseif strcmp(field,'omega_advisor_win')
+        elseif strcmp(field,'omega_eta_advisor_win')
             %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;
-        elseif strcmp(field,'omega_advisor_loss')
+        elseif strcmp(field,'omega_eta_advisor_loss')
             %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;
-         elseif strcmp(field,'omega_context')
+         elseif strcmp(field,'omega_eta_context')
             %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;
@@ -175,15 +175,15 @@ for i = 1:length(field)
             %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
             params.(field{i}) = 1/(1+exp(-P.(field{i})));
             
-         elseif strcmp(field{i},'omega_advisor_loss')
+         elseif strcmp(field{i},'omega_eta_advisor_loss')
             %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
             params.(field{i}) = 1/(1+exp(-P.(field{i})));
             
-        elseif strcmp(field{i},'omega_advisor_win')
+        elseif strcmp(field{i},'omega_eta_advisor_win')
             %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
             params.(field{i}) = 1/(1+exp(-P.(field{i})));
             
-        elseif strcmp(field{i},'omega_context')
+        elseif strcmp(field{i},'omega_eta_context')
             %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
             params.(field{i}) = 1/(1+exp(-P.(field{i})));
         elseif strcmp(field{i},'eta')

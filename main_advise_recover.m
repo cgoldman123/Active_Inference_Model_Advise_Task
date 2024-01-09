@@ -33,19 +33,19 @@ addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
 addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
 
 % Define priors and parameter sequences
-priors = struct('p_ha', 0.75, 'omega_advisor_win', 0.5, 'omega_advisor_loss', .5, 'omega_context', .5, 'novelty_scalar', .1, 'alpha', 4);
+priors = struct('p_ha', 0.75, 'omega_eta_advisor_win', 0.6, 'omega_eta_advisor_loss', .6, 'omega_eta_context', .6, 'novelty_scalar', .3, 'alpha', 2);
 field = fieldnames(priors);
 
 
 if SIM
     p_ha = .75;
-    omega_context = 0.5;
-    omega_advisor_win = .5;
-    omega_advisor_loss = .5;
-    novelty_scalar = .1;
-    alpha = 4;
+    omega_eta_context = 0.6;
+    omega_eta_advisor_win = .6;
+    omega_eta_advisor_loss = .6;
+    novelty_scalar = .3;
+    alpha = 2;
     
-    gen_params = struct('alpha', alpha, 'novelty_scalar', novelty_scalar', 'omega_context', omega_context, 'p_ha', p_ha, 'omega_advisor_win', omega_advisor_win, 'omega_advisor_loss', omega_advisor_loss);
+    gen_params = struct('alpha', alpha, 'novelty_scalar', novelty_scalar', 'omega_eta_context', omega_eta_context, 'p_ha', p_ha, 'omega_eta_advisor_win', omega_eta_advisor_win, 'omega_eta_advisor_loss', omega_eta_advisor_loss);
     
     [gen_data] = advise_sim(gen_params, plot);
 end
@@ -63,9 +63,9 @@ if FIT
         res.subject = FIT_SUBJECT;
         res.num_blocks = size(fit_results{4}.U,2)/30;
         res.p_ha = fit_results{3}.p_ha;
-        res.omega_advisor_win = fit_results{3}.omega_advisor_win;
-        res.omega_advisor_loss = fit_results{3}.omega_advisor_loss;
-        res.omega_context = fit_results{3}.omega_context;
+        res.omega_eta_advisor_win = fit_results{3}.omega_eta_advisor_win;
+        res.omega_eta_advisor_loss = fit_results{3}.omega_eta_advisor_loss;
+        res.omega_eta_context = fit_results{3}.omega_eta_context;
         res.alpha = fit_results{3}.alpha;
         res.novelty_scalar = fit_results{3}.novelty_scalar;
         res.avg_act_prob_time1 = fit_results{5}.avg_act_prob_time1;

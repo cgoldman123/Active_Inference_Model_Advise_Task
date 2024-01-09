@@ -146,19 +146,19 @@ end
 %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
             posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
             prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
-        elseif strcmp(field{i},'omega_advisor_win')
+        elseif strcmp(field{i},'omega_eta_advisor_win')
 %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
 %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
             posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
             prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
             
-        elseif strcmp(field{i},'omega_advisor_loss')
+        elseif strcmp(field{i},'omega_eta_advisor_loss')
 %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
 %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
             posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
             prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
             
-        elseif strcmp(field{i},'omega_context')
+        elseif strcmp(field{i},'omega_eta_context')
 %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
 %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
             posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));

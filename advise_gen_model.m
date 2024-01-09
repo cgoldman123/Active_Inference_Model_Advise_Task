@@ -11,9 +11,9 @@ prior_a = 1;
 
 p_ha = priors.p_ha;
 alpha = priors.alpha;
-omega_context = priors.omega_context;
-omega_advisor_win = priors.omega_advisor_win;
-omega_advisor_loss = priors.omega_advisor_loss;
+omega_eta_context = priors.omega_eta_context;
+omega_eta_advisor_win = priors.omega_eta_advisor_win;
+omega_eta_advisor_loss = priors.omega_eta_advisor_loss;
 novelty_scalar = priors.novelty_scalar;
 %eta = priors.eta;
 %eta_win = priors.eta_win;
@@ -253,9 +253,13 @@ mdp(t).d = d;                    % enable learning priors over initial states
 %mdp(t).eta = eta;                % learning rate
 %mdp(t).eta_win = eta_win;                % learning rate
 %mdp(t).eta_loss = eta_loss;                % learning rate
-mdp(t).omega_advisor_win = omega_advisor_win;            % forgetting rate
-mdp(t).omega_advisor_loss = omega_advisor_loss;  
-mdp(t).omega_context = omega_context;  
+% mdp(t).omega_advisor_win = omega_advisor_win;            % forgetting rate
+% mdp(t).omega_advisor_loss = omega_advisor_loss;  
+% mdp(t).omega_context = omega_context;  
+
+mdp(t).omega_eta_advisor_win = omega_eta_advisor_win;            
+mdp(t).omega_eta_advisor_loss = omega_eta_advisor_loss;  
+mdp(t).omega_eta_context = omega_eta_context;  
 
 mdp(t).alpha = alpha;            % action precision fixed at 1
 mdp(t).beta = beta;              % expected precision of expected free energy over policies
