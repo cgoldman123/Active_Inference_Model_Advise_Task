@@ -920,7 +920,7 @@ for t = 1:T
                             % Bayesian surprise about parameters
                             %----------------------------------------------
                             % novelty for advisor
-                            % ARTIFICIALLY SCALED DOWN BY .5
+                            % ARTIFICIALLY SCALED DOWN BY paramater
                             if isfield(MDP,'a')
                                 Q(k) = Q(k) - novelty_scalar*spm_dot(wA{m,g},{qo xq{m,:}});
                             end
@@ -1124,8 +1124,8 @@ for m = 1:size(MDP,1)
                     a_learned(2, :) = a_learned(2, :) * omega_eta_advisor_loss; 
                     a_learned(3, :) = a_learned(3, :) * omega_eta_advisor_win; 
                     count = da(:,:,2);
-                    count(2,:) = 1 - omega_eta_advisor_loss;
-                    count(3,:) = 1 -omega_eta_advisor_win;
+                    count(2,:) = count(2,:) * (1 - omega_eta_advisor_loss);
+                    count(3,:) = count(3,:) * (1 -omega_eta_advisor_win);
                     MDP(m).a{g}(:,:,2) = MDP.a_floor(:,:) + a_learned + count;
                     %MDP(m).a{g}(:,:,2) = a_learned + MDP.a_floor(:,:) + da(:,:,2)*eta;
   
