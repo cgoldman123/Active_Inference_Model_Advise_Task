@@ -1,6 +1,6 @@
 import sys, os, re, subprocess
 
-subject_list_path = '/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_subject_IDs.csv'
+subject_list_path = '/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_subject_IDs_prolific.csv'
 input_directory = sys.argv[1]
 results = sys.argv[2]
 
@@ -30,4 +30,4 @@ for subject in subjects:
     print(f"SUBMITTED JOB [{jobname}]")
 
 
-    ###python3 runall_advise_fit.py /media/labs/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_2-6-24 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_corrected_combined_learning_forgetting
+    ###python3 runall_advise_fit.py /media/labs/NPC/DataSink/StimTool_Online/WB_Advice /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_prolific_5-1

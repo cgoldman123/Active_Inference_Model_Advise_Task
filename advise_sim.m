@@ -16,7 +16,7 @@ function [gen_data] = advise_sim(priors, plot)
 load('trialinfo_forty_eighty.mat');
               
                
-Sim = 4;
+Sim = 5;
 
 if Sim ==1
     %% 3. Single trial simulations
@@ -76,6 +76,9 @@ elseif Sim == 5
     %MDP = spm_MDP_VB_X_advice(mdp);
     %MDP = spm_MDP_VB_X_advice_no_message_passing(mdp);
     MDP = spm_MDP_VB_X_advice_no_message_passing_faster(mdp);
+    if plot
+        advise_plot_cmg(MDP);
+    end
 
 
 end

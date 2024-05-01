@@ -3,7 +3,7 @@
 % estimated
 
 function extract_params_fits()
-directory = dir('L:\rsmith\lab-members\cgoldman\Wellbeing\advise_task\fitting_actual_data\advise_fits_combined_learning_forgetting');
+directory = dir('L:\rsmith\lab-members\cgoldman\Wellbeing\advise_task\fitting_actual_data\advise_fits_combined_l_f_second_half_of_trials');
 index_array = find(arrayfun(@(n) contains(directory(n).name, 'advise_task'),1:numel(directory)));
 for index = index_array
     file = [directory(index).folder '\' directory(index).name];
@@ -38,6 +38,6 @@ end
 
 estimated_table = array2table(estimated_params, 'VariableNames', colnames);
 
-writetable(estimated_table, ['L:\rsmith\lab-members\cgoldman\Wellbeing\advise_task\fitting_actual_data\compiled_fit_results\' 'advise_fits_combined_learning_forgetting.csv'], 'WriteRowNames',true);
+writetable(estimated_table, ['L:\rsmith\lab-members\cgoldman\Wellbeing\advise_task\fitting_actual_data\compiled_fit_results\' 'advise_fits_combined_l_f_second_half_of_trials.csv'], 'WriteRowNames',true);
 
 

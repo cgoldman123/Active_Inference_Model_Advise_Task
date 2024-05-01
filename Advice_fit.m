@@ -7,15 +7,7 @@ file = [folder '/' directory(index_array).name];
 subdat = readtable(file);
 subdat = subdat(max(find(ismember(subdat.trial_type,'MAIN')))+1:end,:);
 
-% probdat = string(subdat(subdat.event_code==10,:).trial_type);
-% probdat = strrep(probdat,'_',' ');
-% for i = 1:length(probdat)
-%     tri = convertStringsToChars(strsplit(probdat(i)));
-%     adv{i} = tri{3};
-%     lb{i} = tri{1};
-%     sz{i} = tri{4};
-% end
-% trialinfo = horzcat(adv',lb',sz');
+
 load('trialinfo_forty_eighty.mat');
 trialinfo = trialinfo_forty_eighty;
 
@@ -93,21 +85,11 @@ end
     end
 
 
-%     MDP = advise_gen_model(trialinfo,priors);
-
-%     for bb = 1:size(MDP,2)
-%         if mod(bb, 30) ~= 0
-%             MDP(bb).BN = floor(bb/30)+1;        % block number
-%         else
-%             MDP(bb).BN = floor(bb/30);
-%         end
-%     end
-
-%    DCM.MDP    = MDP;              % MDP model
-    DCM.trialinfo = trialinfo;
+% ONLY LOOK AT 1st HALF of TRIALS
+    DCM.trialinfo = trialinfo(181:360,:);
     DCM.field  = field;            % Parameter field
-    DCM.U      = o;              % trial specification (stimuli)
-    DCM.Y      = u;              % responses (action)
+    DCM.U      =  o(:,181:360);              % trial specification (stimuli)
+    DCM.Y      =  u(:,181:360);              % responses (action)
     DCM.priors = priors;
     DCM.mode            = 'fit';
 
