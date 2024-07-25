@@ -20,6 +20,7 @@ with open(subject_list_path) as infile:
 
 ssub_path = '/media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/current_scripts/run_advise_fit.ssub'
 
+# i = 0
 for subject in subjects:
     stdout_name = f"{results}/logs/{subject}-%J.stdout"
     stderr_name = f"{results}/logs/{subject}-%J.stderr"
@@ -28,6 +29,9 @@ for subject in subjects:
     os.system(f"sbatch -J {jobname} -o {stdout_name} -e {stderr_name} {ssub_path} {subject} {input_directory} {results}")
 
     print(f"SUBMITTED JOB [{jobname}]")
+    # i = i +1
+    # if i > 6:
+    #     break
 
 
-    ###python3 runall_advise_fit.py /media/labs/NPC/DataSink/StimTool_Online/WB_Advice /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_prolific_5-1
+    ###python3 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/current_scripts/runall_advise_fit.py /media/labs/NPC/DataSink/StimTool_Online/WB_Advice /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_prolific_7-24

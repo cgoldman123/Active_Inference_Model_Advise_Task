@@ -274,5 +274,5 @@ end
     accuracy_info.avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
     accuracy_info.times_chosen_advisor = length(model_acc_time2);
    
-    FinalResults = [{["fitted " subject]} prior posteriors DCM accuracy_info];
+    FinalResults = [{["fitted " subject]} prior posteriors DCM accuracy_info file];
 end

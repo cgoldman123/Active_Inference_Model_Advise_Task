@@ -1,18 +1,32 @@
 function FinalResults = Advice_fit_prolific(subject,folder,priors,field, plot)
+% initialize has_practice_effects to false, tracking if this participant's
+% first complete behavioral file came after they played the task a little
+% bit
+has_practice_effects = false;
 % Manipulate Data
 directory = dir(folder);
-index_array = find(arrayfun(@(n) contains(directory(n).name, ['active_trust_' subject]),1:numel(directory)));
-if length(index_array) > 1
-    disp("WARNING, MULTIPLE BEHAVIORAL FILES FOUND FOR THIS ID. USING FULL ONE")
-    index_array = max(index_array);
-end
 
+% sort by date
+dates = datetime({directory.date}, 'InputFormat', 'dd-MMM-yyyy HH:mm:ss');
+% Sort the dates and get the sorted indices
+[~, sortedIndices] = sort(dates);
+% Use the sorted indices to sort the structure array
+sortedDirectory = directory(sortedIndices);
+
+index_array = find(arrayfun(@(n) contains(sortedDirectory(n).name, ['active_trust_' subject]),1:numel(sortedDirectory)));
+if length(index_array) > 1
+    disp("WARNING, MULTIPLE BEHAVIORAL FILES FOUND FOR THIS ID. USING THE FIRST FULL ONE")
+end
+file = '';
 for k = 1:length(index_array)
     file_index = index_array(k);
-    file = [folder '/' directory(file_index).name];
+    file = [folder '/' sortedDirectory(file_index).name];
 
     subdat = readtable(file);
     % make sure this file has correct number of trials
+    if any(cellfun(@(x) isequal(x, 'MAIN'), subdat.trial_type)) && (max(subdat.trial) ~= 359)
+        has_practice_effects = true;
+    end
     if max(subdat.trial) ~= 359
         continue;
     end
@@ -104,20 +118,20 @@ for k = 1:length(index_array)
         end
     end
 
-%     % plotting
-%     if plot
-%             MDP     = advise_gen_model(trialinfo(:,:),priors);
-%             for idx_trial = 1:360
-%                 MDP(idx_trial).o = o{idx_trial};
-%                 MDP(idx_trial).u = u{idx_trial};
-%                 MDP(idx_trial).reaction_times = reaction_times{idx_trial};
-%             end
-% 
-%             MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
-%             advise_plot_cmg(MDP);
-% 
-% 
-%     end
+    % plotting
+    if plot
+            MDP     = advise_gen_model(trialinfo(:,:),priors);
+            for idx_trial = 1:360
+                MDP(idx_trial).o = o{idx_trial};
+                MDP(idx_trial).u = u{idx_trial};
+                MDP(idx_trial).reaction_times = reaction_times{idx_trial};
+            end
+
+            MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
+            advise_plot_cmg(MDP);
+
+
+    end
 
 
 
@@ -145,6 +159,7 @@ for k = 1:length(index_array)
 
 
         DCM        = advice_inversion(DCM);   % Invert the model
+        break;
 end
      %% 6.3 Check deviation of prior and posterior means & posterior covariance:
         %==========================================================================
@@ -320,7 +335,8 @@ end
         accuracy_info.avg_model_acc_time1   = sum(model_acc_time1)/length(model_acc_time1);
         accuracy_info.avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
         accuracy_info.times_chosen_advisor = length(model_acc_time2);
+        
 
-        FinalResults = [{["fitted " subject]} prior posteriors DCM accuracy_info];
+        FinalResults = [{["fitted " subject]} prior posteriors DCM accuracy_info has_practice_effects file];
    
 end
