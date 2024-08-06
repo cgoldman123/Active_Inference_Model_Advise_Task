@@ -216,9 +216,10 @@ end
         % Each block is separate -- effectively resetting beliefs at the start of
         % each block. 
         for idx_block = 1:num_blocks
-            priors = posteriors;
-
-            MDP     = advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),priors);
+            %priors = posteriors;
+            %MDP     =
+            %advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),priors);
+            %old model
 
             if (num_trials == 1)
                 outcomes = u;
@@ -232,6 +233,13 @@ end
                     MDP(idx_trial).o = outcomes{idx_trial};
                     MDP(idx_trial).u = actions{idx_trial};
                     MDP(idx_trial).reaction_times = DCM.reaction_times{idx_trial};
+                    task.true_p_right(idx_trial) = 1-str2double(trialinfo{(idx_block-1)*30+idx_trial,2});
+                    task.true_p_a(idx_trial) = str2double(trialinfo{(idx_block-1)*30+idx_trial,1});
+                end
+                if strcmp(trialinfo{idx_block*30-29,3}, '80')
+                    task.block_type = "LL";
+                else
+                    task.block_type = "SL";
                 end
             end
 
@@ -240,33 +248,59 @@ end
 
              %MDPs  = spm_MDP_VB_X_advice(MDP); 
              %MDPs  = spm_MDP_VB_X_advice_no_message_passing(MDP); 
-             MDPs  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP); 
+             % MDPs  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP); 
+             MDPs  = Simple_Advice_Model_CMG(task, MDP,posteriors, 0);
+
              for j = 1:numel(actions)
                 if actions{j}(2,1) ~= 2
-                   act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
-                   if MDPs(j).P(1,actions{j}(2,1),1)==max(MDPs(j).P(:,:,1))
-                       model_acc_time1 = [model_acc_time1 1];
-                   else
-                       model_acc_time1 = [model_acc_time1 0];
-                   end
+                   %act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
+                   action_prob = MDPs.blockwise.action_probs(actions{j}(2,1)-1,1,j);
+                   act_prob_time1 = [act_prob_time1 action_prob]; 
+%                    if MDPs(j).P(1,actions{j}(2,1),1)==max(MDPs(j).P(:,:,1))
+%                        model_acc_time1 = [model_acc_time1 1];
+%                    else
+%                        model_acc_time1 = [model_acc_time1 0];
+%                    end
+                    if action_prob == max(MDPs.blockwise.action_probs(:,1,j))
+                        model_acc_time1 = [model_acc_time1 1];
+                    else
+                        model_acc_time1 = [model_acc_time1 0];
+                    end
+
                 else % when advisor was chosen
-                   act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
-                   act_prob_time2 = [act_prob_time2 MDPs(j).P(1,actions{j}(2,2),2)];
-                   for k = 1:2
-                       if MDPs(j).P(1,actions{j}(2,k),k)==max(MDPs(j).P(:,:,k))
-                           if k ==1
-                              model_acc_time1 = [model_acc_time1 1];
-                           else
-                              model_acc_time2 = [model_acc_time2 1];
-                           end
-                       else
-                           if k ==1
-                              model_acc_time1 = [model_acc_time1 0];
-                           else
-                              model_acc_time2 = [model_acc_time2 0];
-                           end
-                       end
+                   prob_choose_advisor = MDPs.blockwise.action_probs(1,1,j); 
+                   prob_choose_bandit = MDPs.blockwise.action_probs(actions{j}(2,2)-1,2,j); 
+                   act_prob_time1 = [act_prob_time1 prob_choose_advisor];
+                   act_prob_time2 = [act_prob_time2 prob_choose_bandit];
+                   
+                   %act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
+                   %act_prob_time2 = [act_prob_time2 MDPs(j).P(1,actions{j}(2,2),2)];
+                  % for k = 1:2
+%                        if MDPs(j).P(1,actions{j}(2,k),k)==max(MDPs(j).P(:,:,k))
+%                            if k ==1
+%                               model_acc_time1 = [model_acc_time1 1];
+%                            else
+%                               model_acc_time2 = [model_acc_time2 1];
+%                            end
+%                        else
+%                            if k ==1
+%                               model_acc_time1 = [model_acc_time1 0];
+%                            else
+%                               model_acc_time2 = [model_acc_time2 0];
+%                            end
+%                        end
+%                   end
+
+                   if prob_choose_advisor==max(MDPs.blockwise.action_probs(:,1,j))
+                      model_acc_time1 = [model_acc_time1 1];
+                   else
+                      model_acc_time1 = [model_acc_time1 0];
                    end
+                   if prob_choose_bandit==max(MDPs.blockwise.action_probs(:,2,j))
+                      model_acc_time2 = [model_acc_time2 1];
+                   else
+                      model_acc_time2 = [model_acc_time2 0];
+                   end                    
                 end
              end
             % Save block of MDPs to list of all MDPs

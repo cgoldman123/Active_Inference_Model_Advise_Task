@@ -73,20 +73,29 @@ if FIT
         
         
         res.subject = FIT_SUBJECT;
-        res.model_name = 'Corrected Combined Learning/Forgetting';
         res.num_blocks = size(fit_results{4}.U,2)/30;
-        res.p_ha = fit_results{3}.p_ha;
-        res.omega_eta_advisor_win = fit_results{3}.omega_eta_advisor_win;
-        res.omega_eta_advisor_loss = fit_results{3}.omega_eta_advisor_loss;
-        res.omega_eta_context = fit_results{3}.omega_eta_context;
-        res.alpha = fit_results{3}.alpha;
-        res.novelty_scalar = fit_results{3}.novelty_scalar;
+        res.has_practice_effects = fit_results{6};
+
+%         res.model_name = 'Corrected Combined Learning/Forgetting';
+%         res.p_ha = fit_results{3}.p_ha;
+%         res.omega_eta_advisor_win = fit_results{3}.omega_eta_advisor_win;
+%         res.omega_eta_advisor_loss = fit_results{3}.omega_eta_advisor_loss;
+%         res.omega_eta_context = fit_results{3}.omega_eta_context;
+%         res.alpha = fit_results{3}.alpha;
+%         res.novelty_scalar = fit_results{3}.novelty_scalar;
+        params = fieldnames(fit_results{1,3});
+        for i=1:length(params)
+            res.(['posterior_' params{i}]) = fit_results{1,3}.(params{i});
+            res.(['prior_' params{i}]) = fit_results{1,2}.(params{i});
+        end
+
+
+
         res.avg_act_prob_time1 = fit_results{5}.avg_act_prob_time1;
         res.avg_act_prob_time2 = fit_results{5}.avg_act_prob_time2;
         res.avg_model_acc_time1 = fit_results{5}.avg_model_acc_time1;
         res.avg_model_acc_time2 = fit_results{5}.avg_model_acc_time2;
         res.times_chosen_advisor = fit_results{5}.times_chosen_advisor;
-        res.has_practice_effects = fit_results{6};
         
         mf_fields = fieldnames(model_free_results);
         for i=1:length(mf_fields)

@@ -87,7 +87,7 @@ for trial=1:task.num_trials
     observations.hints(trial) = trial_info.o(1,2)-1;
     % if selected advisor
     if observations.hints(trial) 
-        observations.rewards(trial) = trial_info.o(2,3)-1;
+        observations.rewards(trial) = 4 - trial_info.o(2,3); % ryan made win 1, loss 2
         choices(trial,1) = 1;
         choices(trial,2) = trial_info.o(3,3)-1; % make sure left is 2, right 3
     else
