@@ -167,70 +167,24 @@ end
         %--------------------------------------------------------------------------
         % re-transform values and compare prior with posterior estimates
         %--------------------------------------------------------------------------
-        field = fieldnames(DCM.M.pE);
-         for i = 1:length(field)
-        %for j = 1:length(vertcat(mdp.(field{i})))
-            if strcmp(field{i},'p_ha')
-    %             posterior(i) = .99*(exp(DCM.Ep.(field{i})) + (.01/(.99 - .01))) / (exp(DCM.Ep.(field{i})) + (.01/(.99-.01) + 1));
-    %             prior(i) = .99*(exp(DCM.M.pE.(field{i})) + (.01/(.99 - .01))) / (exp(DCM.M.pE.(field{i})) + (.01/(.99-.01) + 1));
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
-
-            elseif strcmp(field{i},'omega')
-    %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
-    %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
-            elseif strcmp(field{i},'omega_eta_advisor_win')
-    %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
-    %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
-
-            elseif strcmp(field{i},'omega_eta_advisor_loss')
-    %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
-    %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
-
-            elseif strcmp(field{i},'omega_eta_context')
-    %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
-    %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));
-            elseif strcmp(field{i},'eta')
-    %             posterior(i) = (exp(DCM.Ep.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.Ep.(field{i})) + (.1/(1-.1) + 1));
-    %             prior(i) = (exp(DCM.M.pE.(field{i})) + (.1 / (1 - .1))) / (exp(DCM.M.pE.(field{i})) + (.1/(1-.1) + 1));
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i})));  
-            elseif strcmp(field{i},'eta_win')
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i}))); 
-            elseif strcmp(field{i},'eta_loss')
-                posteriors.(field{i}) = 1/(1+exp(-DCM.Ep.(field{i})));
-                prior.(field{i}) = 1/(1+exp(-DCM.M.pE.(field{i}))); 
-            elseif strcmp(field{i},'alpha')
-    %             posterior(i) = 30*(exp(DCM.Ep.(field{i})) + (.5/(30 - .5))) / (exp(DCM.Ep.(field{i})) + (.5/(30-.5) + 1));
-    %             prior(i) = 30*(exp(DCM.M.pE.(field{i})) + (.5/(30 - .5))) / (exp(DCM.M.pE.(field{i})) + (.5/(30-.5) + 1));
-                posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
-                prior.(field{i}) = exp(DCM.M.pE.(field{i}));
-            elseif strcmp(field{i},'la')
-                posteriors.(field{i}) = 4*exp(DCM.Ep.(field{i})) / (exp(DCM.Ep.(field{i}))+1);
-                prior.(field{i}) = 4*exp(DCM.M.pE.(field{i})) / (exp(DCM.M.pE.(field{i}))+1);
-            elseif strcmp(field{i},'prior_a')
-    %             posterior(i) = 30*(exp(DCM.Ep.(field{i})) + (.25/(30 - .25))) / (exp(DCM.Ep.(field{i})) + (.25/(30-.25) + 1));
-    %             prior(i) = 30*(exp(DCM.M.pE.(field{i})) + (.25/(30 - .25))) / (exp(DCM.M.pE.(field{i})) + (.25/(30-.25) + 1));
-                posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
-                prior.(field{i}) = exp(DCM.M.pE.(field{i}));
-            elseif strcmp(field{i},'rs')
-                posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
-                prior.(field{i}) = exp(DCM.M.pE.(field{i}));        
-            elseif strcmp(field{i},'novelty_scalar')
-                posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
-                prior.(field{i}) = exp(DCM.M.pE.(field{i}));      
+        fields = fieldnames(DCM.M.pE);
+        
+        for i = 1:length(fields)
+            field = fields{i};
+            if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
+                    'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win'...
+                    'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
+                posteriors.(field) = 1/(1+exp(-DCM.Ep.(field)));
+                prior.(field) = 1/(1+exp(-DCM.M.pE.(field)));
+            elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
+                    'parameter_exploration', })
+                posteriors.(field) = exp(DCM.Ep.(field));
+                prior.(field) = exp(DCM.M.pE.(field));
+            else
+                posteriors.(field) = DCM.Ep.(field);
+                prior.(field) = DCM.M.pE.(field);
             end
         end
-
 
 
 

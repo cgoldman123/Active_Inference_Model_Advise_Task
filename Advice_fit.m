@@ -86,10 +86,10 @@ end
 
 
 % ONLY LOOK AT 1st HALF of TRIALS
-    DCM.trialinfo = trialinfo(181:360,:);
+    DCM.trialinfo = trialinfo(:,:);
     DCM.field  = field;            % Parameter field
-    DCM.U      =  o(:,181:360);              % trial specification (stimuli)
-    DCM.Y      =  u(:,181:360);              % responses (action)
+    DCM.U      =  o(:,:);              % trial specification (stimuli)
+    DCM.Y      =  u(:,:);              % responses (action)
     DCM.priors = priors;
     DCM.mode            = 'fit';
 

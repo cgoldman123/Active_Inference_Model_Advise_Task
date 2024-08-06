@@ -5,7 +5,7 @@ rng('default');
 
 SIM = false; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
 FIT = true; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
-plot = true;
+plot = false;
 %indicate if prolific or local
 local = false;
 
@@ -36,7 +36,11 @@ addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
 addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
 
 % Define priors and parameter sequences
-priors = struct('p_ha', 0.75, 'omega_eta_advisor_win', 0.6, 'omega_eta_advisor_loss', .6, 'omega_eta_context', .6, 'novelty_scalar', .3, 'alpha', 2);
+% priors = struct('p_ha', 0.75, 'omega_eta_advisor_win', 0.6, 'omega_eta_advisor_loss', .6, 'omega_eta_context', .6, 'novelty_scalar', .3, 'alpha', 2);
+% field = fieldnames(priors);
+priors = struct('p_a', 0.8, 'omega', 0.2, 'reward_value',4, ...
+    'inv_temp', 4, 'eta_a_win', .5, 'eta_a_loss', .5, 'eta_d', .5,...
+    'state_exploration', 4, 'parameter_exploration', 4, 'l_loss_value', 4);
 field = fieldnames(priors);
 
 
@@ -48,7 +52,8 @@ if SIM
     novelty_scalar = .3;
     alpha = 2;
     
-    gen_params = struct('alpha', alpha, 'novelty_scalar', novelty_scalar', 'omega_eta_context', omega_eta_context, 'p_ha', p_ha, 'omega_eta_advisor_win', omega_eta_advisor_win, 'omega_eta_advisor_loss', omega_eta_advisor_loss);
+    gen_params = struct('alpha', alpha, 'novelty_scalar', novelty_scalar', 'omega_eta_context', omega_eta_context, ...
+        'p_ha', p_ha, 'omega_eta_advisor_win', omega_eta_advisor_win, 'omega_eta_advisor_loss', omega_eta_advisor_loss);
     
     [gen_data] = advise_sim(gen_params, plot);
 end

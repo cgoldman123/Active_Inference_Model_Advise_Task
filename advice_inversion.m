@@ -65,62 +65,18 @@ for i = 1:length(DCM.field)
         pE.(field) = zeros(size(param));
         pC{i,i}    = diag(param);
     else
-        if strcmp(field,'alpha')
-            %pE.(field) = log(DCM.priors.(field)/(30-DCM.priors.(field)) - (.5/ (30 - .5)));    % bound between .5 and 30
-            pE.(field) = log(DCM.priors.(field));              % in log-space (to keep positive)
-            pC{i,i}    = prior_variance;
-        elseif strcmp(field,'beta')
-            pE.(field) = log(1);                                % in log-space (to keep positive)
-            pC{i,i}    = prior_variance;
-        elseif strcmp(field,'rs')
-            pE.(field) = log(DCM.priors.(field));              % in log-space (to keep positive)
-            pC{i,i}    = prior_variance;
-        elseif strcmp(field,'la')
-            pE.(field) = log(DCM.priors.(field)/(4-DCM.priors.(field)));  % bound between 0 and 4
-            pC{i,i}    = prior_variance;
-        elseif strcmp(field,'prior_a')
-            %pE.(field) = log(DCM.priors.(field)/(30-DCM.priors.(field)) - (.25/ (30 - .25)));    % bound between .25 and 30
-            pE.(field) = log(DCM.priors.(field));              % in log-space (to keep positive)
-            %pC{i,i}    = prior_variance;
-            pC{i,i}    = prior_variance; % making it easier to move prior_a in parameter space
-        elseif strcmp(field,'prior_d')
-            pE.(field) = log(1);                                % in log-space (to keep positive)
-            pC{i,i}    = prior_variance;
-         elseif strcmp(field,'eff')
-             pE.(field) = log(DCM.priors.(field));              % in log-space (to keep positive)
-             pC{i,i}    = prior_variance;
-        elseif strcmp(field,'p_ha')
-           % pE.(field) = log(DCM.priors.(field)/(.99-DCM.priors.(field)) - (.01/ (.99 - .01)));   
+        % transform the parameters that we fit
+        if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
+                'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win'...
+                'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
             pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;
-        elseif strcmp(field,'eta')
-           % pE.(field) = log(DCM.priors.(field)/(.99-DCM.priors.(field)) - (.01/ (.99 - .01)));   
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
-            pC{i,i}    = prior_variance;
-         elseif strcmp(field,'eta_win')
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
-            pC{i,i}    = prior_variance;
-         elseif strcmp(field,'eta_loss')
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
-            pC{i,i}    = prior_variance;
-         elseif strcmp(field,'novelty_scalar')
-             pE.(field) = log(DCM.priors.(field));              % in log-space (to keep positive)
-             pC{i,i}    = prior_variance;
-        elseif strcmp(field,'omega')
-            %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
-            pC{i,i}    = prior_variance;     
-        elseif strcmp(field,'omega_eta_advisor_win')
-            %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
-            pC{i,i}    = prior_variance;
-        elseif strcmp(field,'omega_eta_advisor_loss')
-            %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
-            pC{i,i}    = prior_variance;
-         elseif strcmp(field,'omega_eta_context')
-            %pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)) - (.1 / (1 - .1)));      % bound between .1 and 1
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
+        elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
+                'parameter_exploration', })
+            pE.(field) = log(DCM.priors.(field));               % in log-space (to keep positive)
+            pC{i,i}    = prior_variance;  
+        else
+            pE.(field) = DCM.priors.(field); 
             pC{i,i}    = prior_variance;
         end
     end
@@ -165,51 +121,20 @@ if ~isstruct(P); P = spm_unvec(P,M.pE); end
 % multiply parameters in MDP
 %--------------------------------------------------------------------------
 %mdp   = M.mdp;
-field = fieldnames(M.pE);
-for i = 1:length(field)
-    %for j = 1:length(vertcat(mdp.(field{i})))
-        if strcmp(field{i},'p_ha')
-            %params.(field{i}) = .99*(exp(P.(field{i})) + (.01/(.99 - .01))) / (exp(P.(field{i})) + (.01/(.99-.01) + 1));
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-        elseif strcmp(field{i},'omega')
-            %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-            
-         elseif strcmp(field{i},'omega_eta_advisor_loss')
-            %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-            
-        elseif strcmp(field{i},'omega_eta_advisor_win')
-            %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-            
-        elseif strcmp(field{i},'omega_eta_context')
-            %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-        elseif strcmp(field{i},'eta')
-            %params.(field{i}) = (exp(P.(field{i})) + (.1 / (1 - .1))) / (exp(P.(field{i})) + (.1/(1-.1) + 1));
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-        elseif strcmp(field{i},'eta_win')
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-        elseif strcmp(field{i},'eta_loss')
-            params.(field{i}) = 1/(1+exp(-P.(field{i})));
-        elseif strcmp(field{i},'alpha')
-            %params.(field{i}) = 30*(exp(P.(field{i})) + (.5/(30 - .5))) / (exp(P.(field{i})) + (.5/(30-.5) + 1));
-            params.(field{i}) = exp(P.(field{i}));
-        elseif strcmp(field{i},'la')
-            params.(field{i}) = 4*exp(P.(field{i})) / (exp(P.(field{i}))+1);
-            
-        elseif strcmp(field{i},'rs')
-            params.(field{i}) = exp(P.(field{i}));
-        elseif strcmp(field{i},'prior_a')
-            %params.(field{i}) = 30*(exp(P.(field{i})) + (.25/(30 - .25))) / (exp(P.(field{i})) + (.25/(30-.25) + 1));
-            params.(field{i}) = exp(P.(field{i}));
-        elseif strcmp(field{i},'novelty_scalar')
-            params.(field{i}) = exp(P.(field{i}));
-        end
-    %end
+fields = fieldnames(M.pE);
+for i = 1:length(fields)
+    field = fields{i};
+    if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
+            'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win'...
+            'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
+        params.(field) = 1/(1+exp(-P.(field)));
+    elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
+            'parameter_exploration', })
+        params.(field) = exp(P.(field));
+    else
+        params.(field) = P.(field);
+    end
 end
-
 
 
 
@@ -239,8 +164,8 @@ L = 0;
 % Each block is separate -- effectively resetting beliefs at the start of
 % each block. 
 for idx_block = 1:num_blocks
-    priors = params;
-    MDP     = advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),priors);
+    % note that this generative model is outdated for new advise task model
+    %MDP     = advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),params);
     %[MDP(1:block_size)]   = deal(mdp_block);
     if (num_trials == 1)
         outcomes = U;
@@ -250,26 +175,41 @@ for idx_block = 1:num_blocks
     else
         outcomes = U(30*idx_block-29:30*idx_block);
         actions  = Y(30*idx_block-29:30*idx_block);
+        task.true_p_right = nan(1,30);
         for idx_trial = 1:30
             MDP(idx_trial).o = outcomes{idx_trial};
             MDP(idx_trial).u = actions{idx_trial};
+            task.true_p_right(idx_trial) = 1-str2double(trialinfo{(idx_block-1)*30+idx_trial,2});
+            task.true_p_a(idx_trial) = str2double(trialinfo{(idx_block-1)*30+idx_trial,1});
+
         end
+        if strcmp(trialinfo{idx_block*30-29,3}, '80')
+            task.block_type = "LL";
+        else
+            task.block_type = "SL";
+        end
+        
     end
     
     % solve MDP and accumulate log-likelihood
     %--------------------------------------------------------------------------
     
     %MDP  = spm_MDP_VB_X_advice(MDP);
-    MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
+    %MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
+    MDP  = Simple_Advice_Model_CMG(task, MDP,params, 0);
 
     for j = 1:block_size
         if actions{j}(2,1) ~= 2
-            L = L + log(MDP(j).P(1,actions{j}(2,1),1) + eps);
+            %L = L + log(MDP(j).P(1,actions{j}(2,1),1) + eps); old model
+            prob_choose_bandit = MDP.blockwise.action_probs(actions{j}(2,1)-1,1,j); 
+            L = L + log(prob_choose_bandit + eps);
             
         else % when advisor was chosen
-            prob_choose_advisor = MDP(j).P(1,actions{j}(2,1),1);
+            prob_choose_advisor = MDP.blockwise.action_probs(1,1,j); 
+            %prob_choose_advisor = MDP(j).P(1,actions{j}(2,1),1); old model
             L = L + log(prob_choose_advisor + eps);
-            prob_choose_bandit = MDP(j).P(1,actions{j}(2,2),2);
+            prob_choose_bandit = MDP.blockwise.action_probs(actions{j}(2,2)-1,2,j); 
+            %prob_choose_bandit = MDP(j).P(1,actions{j}(2,2),2); old model
             L = L + log(prob_choose_bandit + eps);
         end
     end
