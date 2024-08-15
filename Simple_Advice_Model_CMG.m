@@ -76,6 +76,10 @@
 
 
 function [results] = Simple_Advice_Model_CMG(task, MDP, params, sim)
+
+% observations.hints = 0 is no hint, 1 is left hint, 2 is right hint
+% observations.rewards(trial) 1 is win, 2 is loss
+% choices : 1 is advisor, 2 is left, 3 is right
 task.num_trials = 30;
 task.num_blocks = 12;
 observations.hints = nan(1,task.num_trials);
@@ -89,10 +93,10 @@ for trial=1:task.num_trials
     if observations.hints(trial) 
         observations.rewards(trial) = 4 - trial_info.o(2,3); % ryan made win 1, loss 2
         choices(trial,1) = 1;
-        choices(trial,2) = trial_info.o(3,3)-1; % make sure left is 2, right 3
+        choices(trial,2) = trial_info.o(3,3)-1; % left is 2, right 3
     else
-        observations.rewards(trial) = trial_info.o(2,2)-1; % make sure left is 2, right is 3
-        choices(trial,1) = trial_info.o(3,2)-1;
+        observations.rewards(trial) = 4 - trial_info.o(2,2); % ryan made win 1, loss 2
+        choices(trial,1) = trial_info.o(3,2)-1; % left is 2, right 3
         choices(trial,2) = 0;
     end
     
@@ -273,7 +277,9 @@ context_floor = 1;
         else
             actions(trial,tp) = choices(trial,tp,block);
         end
-
+        
+        % if first action was choosing a bandit, only update context state
+        % vector
         if actions(trial,1) ~= 1
    
             if sim == 1
@@ -298,6 +304,8 @@ context_floor = 1;
                 ppp_context(:,trial) = [1 0]';
              end
 
+        % if first action was choosing advisor, update likelihood matrices
+        % before picking pandit
         elseif actions(trial,1) == 1
             tp = 2; % second time point
 

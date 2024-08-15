@@ -9,12 +9,12 @@ prior_a = 1;
 %eff = priors.eff;
 
 
-p_ha = priors.p_ha;
-alpha = priors.alpha;
-omega_eta_context = priors.omega_eta_context;
-omega_eta_advisor_win = priors.omega_eta_advisor_win;
-omega_eta_advisor_loss = priors.omega_eta_advisor_loss;
-novelty_scalar = priors.novelty_scalar;
+try, p_ha = priors.p_ha; catch, p_ha = 0.75; end
+try, alpha = priors.alpha; catch, alpha = 4; end
+try, omega_eta_context = priors.omega_eta_context; catch, omega_eta_context = 0.5; end
+try, omega_eta_advisor_win = priors.omega_eta_advisor_win; catch, omega_eta_advisor_win = 0.5; end
+try, omega_eta_advisor_loss = priors.omega_eta_advisor_loss; catch, omega_eta_advisor_loss = 0.5; end
+try, novelty_scalar = priors.novelty_scalar; catch, novelty_scalar = 1; end
 %eta = priors.eta;
 %eta_win = priors.eta_win;
 %eta_loss = priors.eta_loss;

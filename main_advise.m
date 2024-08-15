@@ -3,9 +3,9 @@ dbstop if error
 rng('default');
 
 
-SIM = false; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
+SIM = true; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
 FIT = true; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
-plot = false;
+plot = true;
 %indicate if prolific or local
 local = false;
 
@@ -13,7 +13,7 @@ local = false;
 if ispc
     root = 'L:';
     results_dir = 'L:/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_sandbox';
-    FIT_SUBJECT = '603c92ad5ed1c29cf04476ca';
+    FIT_SUBJECT = '650739048d93f13a5f6b200b'; % 6544b95b7a6b86a8cd8feb88 6550ea5723a7adbcc422790b
     %INPUT_DIRECTORY = [root '/rsmith/wellbeing/tasks/AdviceTask/behavioral_files_2-6-24'];  % Where the subject file is located
     INPUT_DIRECTORY = [root '/NPC/DataSink/StimTool_Online/WB_Advice'];  % Where the subject file is located
 
@@ -35,27 +35,27 @@ addpath([root '/rsmith/all-studies/util/spm12/']);
 addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
 addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
 
-% Define priors and parameter sequences
-% priors = struct('p_ha', 0.75, 'omega_eta_advisor_win', 0.6, 'omega_eta_advisor_loss', .6, 'omega_eta_context', .6, 'novelty_scalar', .3, 'alpha', 2);
-% field = fieldnames(priors);
-priors = struct('p_a', 0.8, 'omega', 0.2, 'reward_value',4, ...
-    'inv_temp', 4, 'eta_a_win', .5, 'eta_a_loss', .5, 'eta_d', .5,...
-    'state_exploration', 4, 'parameter_exploration', 4, 'l_loss_value', 4);
-field = fieldnames(priors);
+% Define all parameters passed into the model; specify which ones to fit in
+% field
+params.p_a = .8;
+params.omega = .2;
+params.reward_value = 4;
+params.inv_temp = 4;
+params.eta_a_win = .5;
+params.eta_a_loss = .5;
+params.eta_d = .5;
+params.state_exploration = 1;
+params.parameter_exploration = 0;
+params.l_loss_value = 4;
 
+field = {'p_a','omega','reward_value','inv_temp','eta_a_win','eta_a_loss','eta_d','l_loss_value'};
+
+
+% fit reward value and loss value, fix explore weight to 1, fix novelty
+% weight to 0
 
 if SIM
-    p_ha = .75;
-    omega_eta_context = 0.6;
-    omega_eta_advisor_win = .6;
-    omega_eta_advisor_loss = .6;
-    novelty_scalar = .3;
-    alpha = 2;
-    
-    gen_params = struct('alpha', alpha, 'novelty_scalar', novelty_scalar', 'omega_eta_context', omega_eta_context, ...
-        'p_ha', p_ha, 'omega_eta_advisor_win', omega_eta_advisor_win, 'omega_eta_advisor_loss', omega_eta_advisor_loss);
-    
-    [gen_data] = advise_sim(gen_params, plot);
+    [gen_data] = advise_sim(params, plot);
 end
     
 if FIT
@@ -64,45 +64,20 @@ if FIT
     else
     
         if ~local
-            fit_results = Advice_fit_prolific(FIT_SUBJECT, INPUT_DIRECTORY, priors, field, plot);
+            [fit_results DCM] = Advice_fit_prolific(FIT_SUBJECT, INPUT_DIRECTORY, params, field, plot);
         else
-            fit_results = Advice_fit(FIT_SUBJECT, INPUT_DIRECTORY, priors, field, plot);
+            [fit_results DCM] = Advice_fit(FIT_SUBJECT, INPUT_DIRECTORY, params, field, plot);
         end
         
-        model_free_results = advise_mf(fit_results{7});
+        model_free_results = advise_mf(fit_results.file);
         
-        
-        res.subject = FIT_SUBJECT;
-        res.num_blocks = size(fit_results{4}.U,2)/30;
-        res.has_practice_effects = fit_results{6};
-
-%         res.model_name = 'Corrected Combined Learning/Forgetting';
-%         res.p_ha = fit_results{3}.p_ha;
-%         res.omega_eta_advisor_win = fit_results{3}.omega_eta_advisor_win;
-%         res.omega_eta_advisor_loss = fit_results{3}.omega_eta_advisor_loss;
-%         res.omega_eta_context = fit_results{3}.omega_eta_context;
-%         res.alpha = fit_results{3}.alpha;
-%         res.novelty_scalar = fit_results{3}.novelty_scalar;
-        params = fieldnames(fit_results{1,3});
-        for i=1:length(params)
-            res.(['posterior_' params{i}]) = fit_results{1,3}.(params{i});
-            res.(['prior_' params{i}]) = fit_results{1,2}.(params{i});
-        end
-
-
-
-        res.avg_act_prob_time1 = fit_results{5}.avg_act_prob_time1;
-        res.avg_act_prob_time2 = fit_results{5}.avg_act_prob_time2;
-        res.avg_model_acc_time1 = fit_results{5}.avg_model_acc_time1;
-        res.avg_model_acc_time2 = fit_results{5}.avg_model_acc_time2;
-        res.times_chosen_advisor = fit_results{5}.times_chosen_advisor;
         
         mf_fields = fieldnames(model_free_results);
         for i=1:length(mf_fields)
-            res.(mf_fields{i}) = model_free_results.(mf_fields{i});      
+            fit_results.(mf_fields{i}) = model_free_results.(mf_fields{i});      
         end
         
-        writetable(struct2table(res), [results_dir '/advise_task-' FIT_SUBJECT '_fits.csv']);
+        writetable(struct2table(fit_results), [results_dir '/advise_task-' FIT_SUBJECT '_fits.csv']);
     end
 
     
@@ -112,5 +87,5 @@ end
     
 
 saveas(gcf,[results_dir '/' FIT_SUBJECT '_fit_plot.png']);
-save(fullfile([results_dir '/fit_results_' FIT_SUBJECT '.mat']), 'fit_results');
+save(fullfile([results_dir '/fit_results_' FIT_SUBJECT '.mat']), 'DCM');
                             

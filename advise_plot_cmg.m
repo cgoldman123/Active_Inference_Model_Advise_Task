@@ -62,98 +62,17 @@ for subPlotIndx = 1:NumSubplots
     
     hold on;
 
-
-    % numbers of transitions, policies and states
-    %--------------------------------------------------------------------------
-    if iscell(MDP(1).X)
-        Nf = numel(MDP(1).B);                 % number of hidden state factors
-        Ng = numel(MDP(1).A);                 % number of outcome factors
-    else
-        Nf = 1;
-        Ng = 1;
-    end
-
-    % graphics
-    %==========================================================================
-    Nt    = length(MDP);               % number of trials
-    Ne    = size(MDP(1).V,1) + 1;      % number of epochs per trial
-    Np    = size(MDP(1).V,2) + 1;      % number of policies
-    for i = 1:Nt
-
-        % assemble expectations of hidden states and outcomes
-        %----------------------------------------------------------------------
-        for j = 1:Ne
-            for k = 1:Ne
-                for f = 1:Nf
-                    try
-                        x{f}{i,1}{k,j} = gradient(MDP(i).xn{f}(:,:,j,k)')';
-                    catch
-                        x{f}{i,1}{k,j} = gradient(MDP(i).xn(:,:,j,k)')';
-                    end
-                end
-            end
-        end
-        s(:,i) = MDP(i).s(:,2);
+    Nt = 30; % number of trials in a block
+     for i = 1:Nt
         o(:,i) = MDP(i).o(2,:)';
-        act_prob(:,i) = MDP(i).P(:,:,1)';
+        act_prob(:,i) = MDP(i).P(:,:,1)'; % get action probs for first time step
         act(:,i) = MDP(i).u(2,1);
-        w(:,i) = mean(MDP(i).dn,2);
         is_win_trial = any(o == 3, 1);
-
-
-        % assemble context learning
-        %----------------------------------------------------------------------
-        for f = 1:Nf
-            try
-                try
-                    D = MDP(i).d{f};
-                catch
-                    D = MDP(i).D{f};
-                end
-            catch
-                try
-                    D = MDP(i).d;
-                catch
-                    D = MDP(i).D;
-                end
-            end
-            d{f}(:,i) = D/sum(D);
-        end
-
-        % assemble performance
-        %----------------------------------------------------------------------
-        p(i)  = 0;
-        for g = 1:Ng
-            try
-                U = spm_softmax(MDP(i).C{g});
-            catch
-                U = spm_softmax(MDP(i).C);
-            end
-            for t = 1:Ne
-                p(i) = p(i) + log(U(MDP(i).o(g,t),t))/Ne;
-            end
-        end
-        q(i)   = sum(MDP(i).rt(2:end));
-
+        
     end
 
-    % assemble output structure if required
-    %--------------------------------------------------------------------------
-    if nargout
-        Q.X  = x;            % expected hidden states
-        Q.R  = act_prob;     % final policy expectations
-        Q.S  = s;            % inital hidden states
-        Q.O  = o;            % final outcomes
-        Q.p  = p;            % performance
-        Q.q  = q;            % reaction times
-        return
-    end
-
-
-    % Initial states and expected policies (habit in red)
-    %--------------------------------------------------------------------------
     col   = {'r.','g.','b.','c.','m.','k.'};
-    t     = 1:Nt;
+    %t     = 1:Nt;
    % subplot(5,1,1)
     if Nt < 64
         MarkerSize = 24;

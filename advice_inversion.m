@@ -54,13 +54,6 @@ prior_variance = .5;
 
 for i = 1:length(DCM.field)
     field = DCM.field{i};
-    try
-        % changed this from param = DCM.MDP.(field);
-        param = DCM.priors.(field);
-        param = double(~~param);
-    catch
-        param = 1;
-    end
     if ALL
         pE.(field) = zeros(size(param));
         pC{i,i}    = diag(param);
@@ -69,14 +62,14 @@ for i = 1:length(DCM.field)
         if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
                 'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win'...
                 'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
-            pE.(field) = log(DCM.priors.(field)/(1-DCM.priors.(field)));  % bound between 0 and 1
+            pE.(field) = log(DCM.params.(field)/(1-DCM.params.(field)));  % bound between 0 and 1
             pC{i,i}    = prior_variance;
         elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
                 'parameter_exploration', })
-            pE.(field) = log(DCM.priors.(field));               % in log-space (to keep positive)
+            pE.(field) = log(DCM.params.(field));               % in log-space (to keep positive)
             pC{i,i}    = prior_variance;  
         else
-            pE.(field) = DCM.priors.(field); 
+            pE.(field) = DCM.params.(field); 
             pC{i,i}    = prior_variance;
         end
     end
@@ -92,6 +85,7 @@ M.pC    = pC;                            % prior variance (parameters)
 %M.mdp   = DCM.MDP;                       % MDP structure
 M.mode  = DCM.mode;
 M.trialinfo = DCM.trialinfo;
+M.params = DCM.params;
 
 % Variational Laplace
 %--------------------------------------------------------------------------
@@ -122,6 +116,7 @@ if ~isstruct(P); P = spm_unvec(P,M.pE); end
 %--------------------------------------------------------------------------
 %mdp   = M.mdp;
 fields = fieldnames(M.pE);
+params = M.params;
 for i = 1:length(fields)
     field = fields{i};
     if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...

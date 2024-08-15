@@ -1,4 +1,4 @@
-function FinalResults = Advice_fit_prolific(subject,folder,priors,field, plot)
+function [fit_results, DCM] = Advice_fit_prolific(subject,folder,params,field, plot)
 % initialize has_practice_effects to false, tracking if this participant's
 % first complete behavioral file came after they played the task a little
 % bit
@@ -117,32 +117,35 @@ for k = 1:length(index_array)
             reaction_times{n}=[first_action - first_stim,second_action - second_stim];
         end
     end
+    trialinfo = trialinfo(:,:);
 
-    % plotting
-    if plot
-            MDP     = advise_gen_model(trialinfo(:,:),priors);
-            for idx_trial = 1:360
-                MDP(idx_trial).o = o{idx_trial};
-                MDP(idx_trial).u = u{idx_trial};
-                MDP(idx_trial).reaction_times = reaction_times{idx_trial};
-            end
+    %plotting old model
+%     if plot
+%             MDP     = advise_gen_model(trialinfo(:,:),params);
+%             for idx_trial = 1:360
+%                 MDP(idx_trial).o = o{idx_trial};
+%                 MDP(idx_trial).u = u{idx_trial};
+%                 MDP(idx_trial).reaction_times = reaction_times{idx_trial};
+%             end
+% 
+%             MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
+%             advise_plot_cmg(MDP);
+% 
+% 
+%     end
 
-            MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
-            advise_plot_cmg(MDP);
-
-
-    end
 
 
 
-        DCM.trialinfo = trialinfo(:,:);
+        DCM.trialinfo = trialinfo;
         DCM.field  = field;            % Parameter field
         DCM.U      =  o(:,:);              % trial specification (stimuli)
         DCM.Y      =  u(:,:);              % responses (action)
         DCM.reaction_times = reaction_times;
 
-        DCM.priors = priors;
+        DCM.params = params;
         DCM.mode            = 'fit';
+        
 
 
 
@@ -174,15 +177,12 @@ end
             if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
                     'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win'...
                     'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
-                posteriors.(field) = 1/(1+exp(-DCM.Ep.(field)));
-                prior.(field) = 1/(1+exp(-DCM.M.pE.(field)));
+                params.(field) = 1/(1+exp(-DCM.Ep.(field)));
             elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
                     'parameter_exploration', })
-                posteriors.(field) = exp(DCM.Ep.(field));
-                prior.(field) = exp(DCM.M.pE.(field));
+                params.(field) = exp(DCM.Ep.(field));
             else
-                posteriors.(field) = DCM.Ep.(field);
-                prior.(field) = DCM.M.pE.(field);
+                params.(field) = DCM.Ep.(field);
             end
         end
 
@@ -249,8 +249,10 @@ end
              %MDPs  = spm_MDP_VB_X_advice(MDP); 
              %MDPs  = spm_MDP_VB_X_advice_no_message_passing(MDP); 
              % MDPs  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP); 
-             MDPs  = Simple_Advice_Model_CMG(task, MDP,posteriors, 0);
+             MDPs  = Simple_Advice_Model_CMG(task, MDP,params, 0);
+             
 
+             % bandit was chosen
              for j = 1:numel(actions)
                 if actions{j}(2,1) ~= 2
                    %act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
@@ -311,20 +313,47 @@ end
         end
         % plotting
         if plot
-                advise_plot_cmg(all_MDPs);
+            % for each trial
+            for i=1:length(DCM.U)
+                MDP(i).o = DCM.U{1,i};
+                MDP(i).u = DCM.Y{1,i};
+                MDP(i).reaction_times = DCM.reaction_times{1,i};
+                
+                block_num = ceil(i/30);
+                trial_num_within_block = i - (block_num-1)*30;
+                trial_action_probs = all_MDPs(block_num).blockwise.action_probs(:,:,trial_num_within_block);
+                % Concatenate the zero row at the top of the matrix
+                zero_row = zeros(1, size(trial_action_probs, 2));
+                trial_action_probs = vertcat(zero_row, trial_action_probs)';
+                MDP(i).P = permute(trial_action_probs, [3 2 1]);
+            end
+            advise_plot_cmg(MDP);
+
         end
          
          
+        fit_results.id = subject;
+        fit_results.has_practice_effects = has_practice_effects;
+        fit_results.file = file;
+        % assign priors/posteriors/fixed params to fit_results
+        param_names = fieldnames(params);
+        for i = 1:length(param_names)
+            % param was fitted
+            if ismember(param_names{i}, fields)
+                fit_results.(['posterior_' param_names{i}]) = params.(param_names{i});
+                fit_results.(['prior_' param_names{i}]) = DCM.params.(param_names{i});  
+            % param was fixed
+            else
+                fit_results.(['fixed_' param_names{i}]) = params.(param_names{i});
 
+            end
+        end
         
 
-        accuracy_info.avg_act_prob_time1 = sum(act_prob_time1)/length(act_prob_time1);
-        accuracy_info.avg_act_prob_time2 = sum(act_prob_time2)/length(act_prob_time2);
-        accuracy_info.avg_model_acc_time1   = sum(model_acc_time1)/length(model_acc_time1);
-        accuracy_info.avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
-        accuracy_info.times_chosen_advisor = length(model_acc_time2);
-        
-
-        FinalResults = [{["fitted " subject]} prior posteriors DCM accuracy_info has_practice_effects file];
-   
+        fit_results.avg_act_prob_time1 = sum(act_prob_time1)/length(act_prob_time1);
+        fit_results.avg_act_prob_time2 = sum(act_prob_time2)/length(act_prob_time2);
+        fit_results.avg_model_acc_time1   = sum(model_acc_time1)/length(model_acc_time1);
+        fit_results.avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
+        fit_results.times_chosen_advisor = length(model_acc_time2);
+           
 end

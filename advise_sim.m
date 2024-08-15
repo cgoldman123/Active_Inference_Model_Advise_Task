@@ -16,9 +16,37 @@ function [gen_data] = advise_sim(priors, plot)
 load('trialinfo_forty_eighty.mat');
               
                
-Sim = 5;
+Sim = 0; % new model
 
-if Sim ==1
+
+if Sim==0 % new model
+    trialinfo = trialinfo_forty_eighty;
+    
+    all_MDPs = [];
+    for idx_block = 1:12
+        for idx_trial = 1:30
+            task.true_p_right(idx_trial) = 1-str2double(trialinfo{(idx_block-1)*30+idx_trial,2});
+            task.true_p_a(idx_trial) = str2double(trialinfo{(idx_block-1)*30+idx_trial,1});
+        end
+        if strcmp(trialinfo{idx_block*30-29,3}, '80')
+            task.block_type = "LL";
+        else
+            task.block_type = "SL";
+        end
+        MDP = [];
+        params = priors;
+        sim = 1;
+        MDPs  = Simple_Advice_Model_CMG(task, MDP,params, sim);
+        all_MDPs = [all_MDPs; MDPs'];
+    end
+
+
+
+
+
+
+
+elseif Sim ==1
     %% 3. Single trial simulations
 
     %--------------------------------------------------------------------------
