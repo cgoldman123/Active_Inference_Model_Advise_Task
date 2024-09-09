@@ -1,4 +1,4 @@
-function result = get_mf_prolific(file)
+function result = advise_mf(file)
 
 
 subdat = readtable(file);

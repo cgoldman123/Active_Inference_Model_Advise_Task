@@ -34,4 +34,4 @@ for subject in subjects:
     #     break
 
 
-    ###python3 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/current_scripts/runall_advise_fit.py /media/labs/NPC/DataSink/StimTool_Online/WB_Advice /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_prolific_8_8_24
+    ###python3 /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/current_scripts/runall_advise_fit.py /media/labs/NPC/DataSink/StimTool_Online/WB_Advice /media/labs/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_prolific_8_18_24
