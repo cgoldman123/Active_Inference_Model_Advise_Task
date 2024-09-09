@@ -1,6 +1,14 @@
 % README File
 
-Commit and change history
+main_advise.m is the main file for fitting and simulating behavior in the Advise (Epistemic T-Maze) Task!
+
+Note that spm12 must be downloaded and the path must be added in main_advise.m (https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
+Additionally, the path to the active inference tutorial scripts may be added to main_advise.m for plotting code (https://www.sciencedirect.com/science/article/pii/S0022249621000973)
+
+
+-------------------------------------------------------------------------------------------------------------
+
+Noteworthy Commits 
 
 Commit on 12/12/23: "Multiple Changes to VBX"
     In VBX, I changed calculation of probability of actions. 
