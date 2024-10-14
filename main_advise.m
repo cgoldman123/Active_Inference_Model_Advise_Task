@@ -1,9 +1,10 @@
 % main script for fitting/simming behavior on the advise task
 dbstop if error
 rng('default');
+clear all;
 
 
-SIM = false; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
+SIM = true; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
 FIT = true; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
 plot = true;
 %indicate if prolific or local
@@ -36,37 +37,46 @@ addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-ma
 
 % Define all parameters passed into the model; specify which ones to fit in
 % field
+% Define all parameters passed into the model; specify which ones to fit in
+% field
 params.p_a = .8;
-params.omega = .2;
-params.reward_value = 4;
 params.inv_temp = 4;
-params.eta_a_win = .5;
-params.eta_a_loss = .5;
-params.eta_d = .5;
+params.reward_value = 4;
+params.l_loss_value = 4;
+%params.omega = .2;
+params.omega_d_win = .2;
+params.omega_d_loss = .2;
+params.omega_a_win = .2;
+params.omega_a_loss = .2;
+%params.omega_d = .2;
+%params.omega_a = .2;
+params.eta = .5;
+%params.eta_d = .5;
+%params.eta_d_win = .5;
+%params.eta_d_loss = .5;
+%params.eta_a = .5;
+%params.eta_a_win = .5;
+%params.eta_a_loss = .5;
 params.state_exploration = 1;
 params.parameter_exploration = 0;
-params.l_loss_value = 4;
-
-field = {'p_a','omega','reward_value','inv_temp','eta_a_win','eta_a_loss','eta_d','l_loss_value'};
 
 
-% fit reward value and loss value, fix explore weight to 1, fix novelty
-% weight to 0
+field = {'p_a','inv_temp','reward_value','l_loss_value','omega_a_win','omega_a_loss','omega_d_win','omega_d_loss','eta'}; %those are fitted
 
-if SIM
-    [gen_data] = advise_sim(params, plot);
-end
     
 if FIT
-    if SIM
-        fit_results = advise_sim_fit(gen_data, field, priors);
-    else
-    
         if ~local
             [fit_results, DCM] = Advice_fit_prolific(FIT_SUBJECT, INPUT_DIRECTORY, params, field, plot);
         else
             [fit_results, DCM] = Advice_fit(FIT_SUBJECT, INPUT_DIRECTORY, params, field, plot);
         end
+        
+        %%% feed the fitted parameters into advise_sim
+        
+        
+        %%% fit the simulated behavior using advise_sim_fit
+        
+        
         
         model_free_results = advise_mf(fit_results.file);
         
@@ -77,10 +87,10 @@ if FIT
         end
         
         writetable(struct2table(fit_results), [results_dir '/advise_task-' FIT_SUBJECT '_fits.csv']);
-    end
+end
 
     
-end
+%end
 
     
     

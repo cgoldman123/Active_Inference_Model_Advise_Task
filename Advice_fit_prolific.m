@@ -23,6 +23,9 @@ for k = 1:length(index_array)
     file = [folder '/' sortedDirectory(file_index).name];
 
     subdat = readtable(file);
+    if strcmp(class(subdat.trial),'cell')
+        subdat.trial = str2double(subdat.trial);
+    end
     % make sure this file has correct number of trials
     if any(cellfun(@(x) isequal(x, 'MAIN'), subdat.trial_type)) && (max(subdat.trial) ~= 359)
         has_practice_effects = true;
@@ -175,11 +178,11 @@ end
         for i = 1:length(fields)
             field = fields{i};
             if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
-                    'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win'...
+                    'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win',...
                     'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
                 params.(field) = 1/(1+exp(-DCM.Ep.(field)));
             elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
-                    'parameter_exploration', })
+                    'parameter_exploration'})
                 params.(field) = exp(DCM.Ep.(field));
             else
                 params.(field) = DCM.Ep.(field);
