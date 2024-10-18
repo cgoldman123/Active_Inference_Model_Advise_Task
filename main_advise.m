@@ -6,9 +6,10 @@ clear all;
 
 SIM = true; % Generate simulated behavior (if false and FIT == true, will fit to subject file data instead)
 FIT = true; % Fit example subject data 'BBBBB' or fit simulated behavior (if SIM == true)
-plot = true;
+plot = false;
 %indicate if prolific or local
 local = false;
+is_feng_local = true;
 
 % Setup directories based on system
 if ispc
@@ -16,6 +17,15 @@ if ispc
     results_dir = 'L:/rsmith/lab-members/cgoldman/Wellbeing/advise_task/fitting_actual_data/advise_fits_sandbox'; % Where the fit results will save
     FIT_SUBJECT = 'FENGTEST'; % 6544b95b7a6b86a8cd8feb88 6550ea5723a7adbcc422790b
     INPUT_DIRECTORY = [root '/NPC/DataSink/StimTool_Online/WB_Advice'];  % Where the subject file is located
+
+elseif is_feng_local
+    [root, ~, ~] = fileparts(mfilename('fullpath'));
+   
+    % only run one subjuect, feng_self data
+    FIT_SUBJECT = 'FENGTEST';
+    results_dir = fullfile(root, 'results');
+    INPUT_DIRECTORY = fullfile(root, 'inputs');
+
 
 else
     root = '/media/labs';
@@ -30,10 +40,17 @@ fprintf([INPUT_DIRECTORY '\n']);
 fprintf([FIT_SUBJECT '\n']);
 
 
+% for lab cluster, uncomment if needed
+if is_feng_local
+    addpath([root '/spm/']);
+    addpath([root '/spm/toolbox/DEM/']);
+    addpath([root '/Active-Inference-Tutorial-Scripts-main']);
+else
+    addpath([root '/rsmith/all-studies/util/spm12/']);
+    addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
+    addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
 
-addpath([root '/rsmith/all-studies/util/spm12/']);
-addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
-addpath([root '/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main']);
+end
 
 % Define all parameters passed into the model; specify which ones to fit in
 % field
@@ -43,14 +60,14 @@ params.p_a = .8;
 params.inv_temp = 4;
 params.reward_value = 4;
 params.l_loss_value = 4;
-%params.omega = .2;
-params.omega_d_win = .2;
-params.omega_d_loss = .2;
-params.omega_a_win = .2;
-params.omega_a_loss = .2;
+params.omega = 0;
+%params.omega_d_win = .2;
+%params.omega_d_loss = .2;
+%params.omega_a_win = .2;
+%params.omega_a_loss = .2;
 %params.omega_d = .2;
 %params.omega_a = .2;
-params.eta = .5;
+params.eta = 1;
 %params.eta_d = .5;
 %params.eta_d_win = .5;
 %params.eta_d_loss = .5;
@@ -61,8 +78,8 @@ params.state_exploration = 1;
 params.parameter_exploration = 0;
 
 
-field = {'p_a','inv_temp','reward_value','l_loss_value','omega_a_win','omega_a_loss','omega_d_win','omega_d_loss','eta'}; %those are fitted
-
+% field = {'p_a','inv_temp','reward_value','l_loss_value','omega_a_win','omega_a_loss','omega_d_win','omega_d_loss','eta'}; %those are fitted
+field = {'p_a','inv_temp','reward_value','l_loss_value'};
     
 if FIT
         if ~local
@@ -71,12 +88,22 @@ if FIT
             [fit_results, DCM] = Advice_fit(FIT_SUBJECT, INPUT_DIRECTORY, params, field, plot);
         end
         
-        %%% feed the fitted parameters into advise_sim
+        % feed the fitted parameters into advise_sim
         
         
-        %%% fit the simulated behavior using advise_sim_fit
+        %Loop through each field name and print the value
         
+        for i = 1:length(field)
+            fieldName = field{i};  % Get the field name as a string
+            params.(fieldName) = DCM.Ep.(fieldName);
+        end
         
+        sim_data = advise_sim(params, false, true);
+        
+        % fit the simulated behavior using advise_sim_fit
+        
+        sim_fit_result = advise_sim_fit(sim_data, field, params);
+
         
         model_free_results = advise_mf(fit_results.file);
         

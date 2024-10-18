@@ -15,11 +15,11 @@ function FinalResults = advise_sim_fit(sim_data, field, priors)
 %     end
     
     %DCM.MDP    = {sim_data.mdp};                 % MDP model
-    DCM.trialinfo = sim_data(1).trialinfo;
+    DCM.trialinfo = sim_data.trialinfo;
     DCM.field = field;       % parameter (field) names to optimise
-    DCM.U      = {sim_data.observations};              % trial specification (stimuli)
-    DCM.Y      = {sim_data.responses};              % responses (action)
-    DCM.priors = priors;
+    DCM.U      = sim_data.observations;              % trial specification (stimuli)
+    DCM.Y      = sim_data.responses;              % responses (action)
+    DCM.params = priors;
     DCM.mode = 'fit';
     
 
@@ -86,7 +86,7 @@ function FinalResults = advise_sim_fit(sim_data, field, priors)
         elseif strcmp(field{i},'la')
             posteriors.(field{i}) = 4*exp(DCM.Ep.(field{i})) / (exp(DCM.Ep.(field{i}))+1);
             prior.(field{i}) = 4*exp(DCM.M.pE.(field{i})) / (exp(DCM.M.pE.(field{i}))+1);
-        elseif strcmp(field{i},'prior_a')
+        elseif strcmp(field{i},'p_a')
 %             posterior(i) = 30*(exp(DCM.Ep.(field{i})) + (.25/(30 - .25))) / (exp(DCM.Ep.(field{i})) + (.25/(30-.25) + 1));
 %             prior(i) = 30*(exp(DCM.M.pE.(field{i})) + (.25/(30 - .25))) / (exp(DCM.M.pE.(field{i})) + (.25/(30-.25) + 1));
             posteriors.(field{i}) = exp(DCM.Ep.(field{i}));
