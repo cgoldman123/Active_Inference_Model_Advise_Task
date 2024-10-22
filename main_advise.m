@@ -92,12 +92,21 @@ if FIT
         
         
         %Loop through each field name and print the value
-        
-        for i = 1:length(field)
-            fieldName = field{i};  % Get the field name as a string
-            params.(fieldName) = DCM.Ep.(fieldName);
+
+        fit_fields = fieldnames(fit_results);
+
+        for i = 1:length(fit_fields)
+            field_name = fit_fields{i};  
+            if startsWith(field_name, 'posterior_')
+                param_name = strrep(field_name, 'posterior_', '');
+                if isfield(params, param_name)
+                    params.(param_name) = fit_results.(field_name);
+                else
+                    warning('Field "%s" not found in params struct.', param_name);
+                end
+            end
         end
-        
+
         sim_data = advise_sim(params, false, true);
         
         % fit the simulated behavior using advise_sim_fit
