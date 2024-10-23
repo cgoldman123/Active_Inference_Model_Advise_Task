@@ -117,7 +117,7 @@ function FinalResults = advise_sim_fit(sim_data, field, params)
         end
             
         
-        MDP= Simple_Advice_Model_CMG(task, MDP,params, 0);
+        MDPs= Simple_Advice_Model_CMG(task, MDP,params, 0);
 
 
         for j = 1:numel(actions)
@@ -163,9 +163,9 @@ function FinalResults = advise_sim_fit(sim_data, field, params)
 
 
          
-    fit_results.id = subject;
-    fit_results.has_practice_effects = has_practice_effects;
-    fit_results.file = file;
+  
+    fit_results.has_practice_effects = false;
+    fit_results.file = '';
     % assign priors/posteriors/fixed params to fit_results
     param_names = fieldnames(params);
     for i = 1:length(param_names)
