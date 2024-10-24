@@ -186,11 +186,10 @@ function FinalResults = advise_sim_fit(sim_data, field, params)
     fit_results.avg_model_acc_time1   = sum(model_acc_time1)/length(model_acc_time1);
     fit_results.avg_model_acc_time2   = sum(model_acc_time2)/length(model_acc_time2);
     fit_results.times_chosen_advisor = length(model_acc_time2);
+    fit_results.free_energy = DCM.F;
 
 
 
 
     FinalResults = fit_results;
-
-
 end
