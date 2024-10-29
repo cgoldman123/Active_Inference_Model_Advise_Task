@@ -14,7 +14,7 @@ FIT = true;
 % True -> TODO
 PLOT = false;
 % True -> EXAMPLE SUBJECT
-EG_SUBJECT = true;
+EG_SUBJECT = false;
 
 % SETTINGS
 % Subject identifier for the test or experiment
@@ -122,18 +122,20 @@ disp('-----------------------------');
 
 % Add external paths depending on the system
 if strcmp(env_sys, 'pc')
-    spmPath = 'C:\path\to\spm\windows';
-    spmDemPath = 'C:\path\to\spm_dem\windows';
-    tutorialPath = 'C:\path\to\tutorial\windows';
+    spmPath = 'L:/rsmith/all-studies/util/spm12/';
+    spmDemPath = 'L:/rsmith/all-studies/util/spm12/toolbox/DEM/';
+    tutorialPath = 'L:/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main';
+   
 elseif strcmp(env_sys, 'mac')
     spmPath =  [ROOT '/spm/'];
     spmDemPath = [ROOT '/spm/toolbox/DEM/'];
     tutorialPath = [ROOT '/Active-Inference-Tutorial-Scripts-main'];
 
 elseif strcmp(env_sys, 'cluster')
-    spmPath = 'L:/rsmith/all-studies/util/spm12/';
-    spmDemPath = 'L:/rsmith/all-studies/util/spm12/toolbox/DEM/';
-    tutorialPath = 'L:/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main';
+    spmPath = '/mnt/dell_storage/labs/rsmith/all-studies/util/spm12';
+    spmDemPath = '/mnt/dell_storage/labs/rsmith/all-studies/util/spm12/toolbox/DEM';
+    tutorialPath = '/mnt/dell_storage/labs/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main';
+   
 
 end
 
