@@ -18,7 +18,7 @@ EG_SUBJECT = false;
 
 % SETTINGS
 % Subject identifier for the test or experiment
-FIT_SUBJECT = 'FENGTEST';
+FIT_SUBJECT = '5a5ec79cacc75b00017aa095';
 % ROOT:
 % If ROOT is not assigned (i.e., empty), the script will derive the root 
 % path based on the location of the main file.
@@ -260,7 +260,7 @@ if FIT && ~SIM
     % Example: fit_model(candidate_params);
 
 elseif FIT && SIM
-    if strcmp(env_sys,'mac')
+    if strcmp(env_sys,'mac')|| strcmp(env_sys, 'cluster')
         [fit_results, DCM] = Advice_fit_prolific(FIT_SUBJECT, INPUT_PATH, params, fields, PLOT);
     else
         [fit_results, DCM] = Advice_fit(FIT_SUBJECT, INPUT_PATH, params, fields, PLOT);
