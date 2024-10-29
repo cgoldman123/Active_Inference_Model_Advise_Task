@@ -76,17 +76,6 @@ elseif ~isAbsolutePath(INPUT_PATH)
     INPUT_PATH = fullfile(ROOT, INPUT_PATH);
 end
 
-% Define the isAbsolutePath function
-function isAbs = isAbsolutePath(givenPath)
-    if ispc
-        isAbs = length(givenPath) >= 2 && givenPath(2) == ':';
-    elseif isunix || ismac
-        isAbs = strncmp(givenPath, '/', 1);
-    else
-        error('Unknown operating system.');
-    end
-end
-
 
 % Display all settings and switches
 disp('--- Settings and Switches ---');
@@ -395,3 +384,15 @@ end
 % saveas(gcf,[results_dir '/' FIT_SUBJECT '_fit_plot.png']);
 % save(fullfile([results_dir '/fit_results_' FIT_SUBJECT '.mat']), 'DCM');
 % 
+
+% Define the isAbsolutePath function
+function isAbs = isAbsolutePath(givenPath)
+    if ispc
+        isAbs = length(givenPath) >= 2 && givenPath(2) == ':';
+    elseif isunix || ismac
+        isAbs = strncmp(givenPath, '/', 1);
+    else
+        error('Unknown operating system.');
+    end
+end
+
