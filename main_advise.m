@@ -26,7 +26,7 @@ ROOT = '';
 % RES_PATH:
 % If RES_PATH is not assigned (i.e., empty), it will be auto-generated relative to ROOT.
 % If RES_PATH is a relative path, it will be appended to the ROOT path.
-RES_PATH = '';
+RES_PATH = '/mnt/dell_storage/labs/rsmith/lab-members/fli/advise_task/results';
 % INPUT_PATH:
 % The folder path where the subject file is located. If INPUT_PATH is a relative path,
 % it will be appended to the ROOT path.
