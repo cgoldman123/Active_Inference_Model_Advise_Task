@@ -30,11 +30,11 @@ RES_PATH = '';
 % INPUT_PATH:
 % The folder path where the subject file is located. If INPUT_PATH is a relative path,
 % it will be appended to the ROOT path.
-INPUT_PATH = '';
+INPUT_PATH = '/mnt/dell_storage/labs/NPC/DataSink/StimTool_Online/WB_Advice';
 % IDX_CANDIDATE:
 % This will define which candidate (set of parameters) is currently in use
 % Modify this value to switch between different candidates (1 to 10 in this case)
-IDX_CANDIDATE = 10; % Default to candidate 1, can be changed dynamically
+IDX_CANDIDATE = 1; % Default to candidate 1, can be changed dynamically
 
 
 
@@ -131,9 +131,9 @@ elseif strcmp(env_sys, 'mac')
     tutorialPath = [ROOT '/Active-Inference-Tutorial-Scripts-main'];
 
 elseif strcmp(env_sys, 'cluster')
-    spmPath = '/path/to/spm/cluster';
-    spmDemPath = '/path/to/spm_dem/cluster';
-    tutorialPath = '/path/to/tutorial/cluster';
+    spmPath = 'L:/rsmith/all-studies/util/spm12/';
+    spmDemPath = 'L:/rsmith/all-studies/util/spm12/toolbox/DEM/';
+    tutorialPath = 'L:/rsmith/lab-members/cgoldman/Active-Inference-Tutorial-Scripts-main';
 
 end
 
