@@ -18,7 +18,7 @@ EG_SUBJECT = false;
 
 % SETTINGS
 % Subject identifier for the test or experiment
-FIT_SUBJECT = '5a5ec79cacc75b00017aa095';
+FIT_SUBJECT = '';
 % ROOT:
 % If ROOT is not assigned (i.e., empty), the script will derive the root 
 % path based on the location of the main file.
@@ -34,7 +34,7 @@ INPUT_PATH = '/mnt/dell_storage/labs/NPC/DataSink/StimTool_Online/WB_Advice';
 % IDX_CANDIDATE:
 % This will define which candidate (set of parameters) is currently in use
 % Modify this value to switch between different candidates (1 to 10 in this case)
-IDX_CANDIDATE = 1; % Default to candidate 1, can be changed dynamically
+IDX_CANDIDATE = 0; % Default to candidate 1, can be changed dynamically
 
 
 
@@ -57,6 +57,21 @@ if isempty(ROOT)
     ROOT = fileparts(mfilename('fullpath'));
     disp(['ROOT path set to: ', ROOT]);
 end
+
+if isempty(FIT_SUBJECT)
+    % Read from environment variable if empty
+    FIT_SUBJECT = getenv('FIT_SUBJECT');
+end
+
+IDX_CANDIDATE = 0;
+
+if IDX_CANDIDATE < 1 || IDX_CANDIDATE > 10
+    env_value = getenv('IDX_CANDIDATE');
+    if ~isempty(env_value)
+        IDX_CANDIDATE = str2double(env_value);
+    end
+end
+
 
 % Check and handle RES_PATH
 if isempty(RES_PATH)
