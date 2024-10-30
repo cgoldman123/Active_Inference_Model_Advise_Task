@@ -1,5 +1,5 @@
 import os
-import pandas as pd
+import csv
 import re
 
 # Define path to your files
@@ -17,7 +17,7 @@ for file_name in os.listdir(path):
     if match:
         # Extract UUID and index from the file name
         uuid = match.group(1)
-        idx = int(match.group(2))
+        idx = int(match.group(2))-1
         
         # Ensure the UUID is in the dictionary with a 10-element array initialized to 0
         if uuid not in uuid_dict:
@@ -25,19 +25,27 @@ for file_name in os.listdir(path):
 
         # Read the file
         file_path = os.path.join(path, file_name)
-        df = pd.read_csv(file_path)
+        with open(file_path, newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            rows = list(reader)
 
-        # Extract the F value from the last column, second row (index 1)
-        f_value = df.iloc[1, -1]
+            # Extract the F value from the last column of the second row (index 1)
+            f_value = float(rows[1][-1])
 
-        # Assign the F value to the correct index in the dictionary
-        uuid_dict[uuid][idx-1] = f_value
+            # Assign the F value to the correct index in the dictionary
+            uuid_dict[uuid][idx] = f_value
 
-# Convert the dictionary to a DataFrame
-output_df = pd.DataFrame.from_dict(uuid_dict, orient="index", columns=[f"idx_{i}" for i in range(1,11)])
-
-# Save the output to a CSV file
-output_csv_path = os.path.join(path, "final_res/output_f_values.csv")
-output_df.to_csv(output_csv_path, index_label="uuid")
+# Create the output CSV file
+output_csv_path = os.path.join(path, "output_f_values.csv")
+with open(output_csv_path, 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    
+    # Write header
+    header = ['uuid'] + [f"idx_{i+1}" for i in range(10)]
+    writer.writerow(header)
+    
+    # Write UUIDs and their values
+    for uuid, values in uuid_dict.items():
+        writer.writerow([uuid] + values)
 
 print(f"Output saved to {output_csv_path}")
