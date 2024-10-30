@@ -30,16 +30,16 @@ if strcmp(env_sys, 'pc')
 elseif strcmp(env_sys, 'mac')
     spmPath =  [ ROOT '/spm/'];
 elseif strcmp(env_sys, 'cluster')
-    spmPath = '/path/to/spm/cluster';
+    spmPath = '/mnt/dell_storage/labs/rsmith/all-studies/util/spm12';
 
 end
 
 addpath(spmPath);
 
 % input_file = 'L:/rsmith/lab-members/ttakahashi/WellbeingTasks/AdviceTask/output.csv';
-input_file = [ ROOT '/results/Free_Energy_Data.csv'];
+input_file = '/mnt/dell_storage/labs/rsmith/lab-members/fli/advise_task/results/final_res/output_f_values.csv'
 % output_file = 'L:/rsmith/lab-members/ttakahashi/WellbeingTasks/AdviceTask/';
-output_folder_path = [ ROOT '/results/'];
+output_folder_path = '/mnt/dell_storage/labs/rsmith/lab-members/fli/advise_task/results/final_res/';
 % addpath('L:/rsmith/all-studies/util/spm12/');
 
 allData = readtable(input_file);
@@ -58,4 +58,4 @@ results_table.pxp = pxp';
 results_table.bor = repmat(bor,size(lme,2),1);
 
 
-writetable(results_table, fullfile(output_folder_path, 'model_comparison_results_advicetask.csv'));
+writetable(results_table, fullfile(output_folder_path, 'model_identifiability_results_advicetask.csv'));
