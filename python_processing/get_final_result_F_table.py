@@ -36,7 +36,7 @@ for file_name in os.listdir(path):
             uuid_dict[uuid][idx] = f_value
 
 # Create the output CSV file
-output_csv_path = os.path.join(path, "output_f_values.csv")
+output_csv_path = os.path.join(path, "final_res/output_f_values.csv")
 with open(output_csv_path, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     
