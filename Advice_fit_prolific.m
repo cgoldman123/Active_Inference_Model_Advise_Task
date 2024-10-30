@@ -74,7 +74,7 @@ for k = 1:length(index_array)
             r=4;
         elseif ismember(resp(n),'left')
             r=3;
-         elseif ismember(resp(n),'none')
+        elseif ismember(resp(n),'none')
             error("this person chose the did nothing option and our scripts are not set up to allow that")
         end 
 
@@ -122,50 +122,17 @@ for k = 1:length(index_array)
     end
     trialinfo = trialinfo(:,:);
 
-    %plotting old model
-%     if plot
-%             MDP     = advise_gen_model(trialinfo(:,:),params);
-%             for idx_trial = 1:360
-%                 MDP(idx_trial).o = o{idx_trial};
-%                 MDP(idx_trial).u = u{idx_trial};
-%                 MDP(idx_trial).reaction_times = reaction_times{idx_trial};
-%             end
-% 
-%             MDP  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP);
-%             advise_plot_cmg(MDP);
-% 
-% 
-%     end
 
+    DCM.trialinfo = trialinfo;
+    DCM.field  = field;            % Parameter field
+    DCM.U      =  o(:,:);              % trial specification (stimuli)
+    DCM.Y      =  u(:,:);              % responses (action)
+    DCM.reaction_times = reaction_times;
 
-
-
-        DCM.trialinfo = trialinfo;
-        DCM.field  = field;            % Parameter field
-        DCM.U      =  o(:,:);              % trial specification (stimuli)
-        DCM.Y      =  u(:,:);              % responses (action)
-        DCM.reaction_times = reaction_times;
-
-        DCM.params = params;
-        DCM.mode            = 'fit';
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        DCM        = advice_inversion(DCM);   % Invert the model
-        break;
+    DCM.params = params;
+    DCM.mode            = 'fit';
+    DCM = advice_inversion(DCM);   % Invert the model
+    break;
 end
      %% 6.3 Check deviation of prior and posterior means & posterior covariance:
         %==========================================================================
@@ -173,78 +140,78 @@ end
         %--------------------------------------------------------------------------
         % re-transform values and compare prior with posterior estimates
         %--------------------------------------------------------------------------
-        fields = fieldnames(DCM.M.pE);
+fields = fieldnames(DCM.M.pE);
         
-        for i = 1:length(fields)
-            field = fields{i};
-            if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
+for i = 1:length(fields)
+    field = fields{i};
+    if ismember(field, {'p_right', 'p_a', 'eta', 'omega', 'eta_a_win', 'omega_a_win',...
                     'eta_a','omega_a','eta_d','omega_d','eta_a_loss','omega_a_loss','eta_d_win',...
                     'omega_d_win', 'eta_d_loss', 'omega_d_loss'})
-                params.(field) = 1/(1+exp(-DCM.Ep.(field)));
-            elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
+        params.(field) = 1/(1+exp(-DCM.Ep.(field)));
+    elseif ismember(field, {'inv_temp', 'reward_value', 'l_loss_value', 'state_exploration',...
                     'parameter_exploration'})
-                params.(field) = exp(DCM.Ep.(field));
-            else
-                params.(field) = DCM.Ep.(field);
-            end
-        end
+        params.(field) = exp(DCM.Ep.(field));
+    else
+        params.(field) = DCM.Ep.(field);
+    end
+end
 
 
 
         % Simulate beliefs using fitted values to get avg action prob
-        all_MDPs = [];
+all_MDPs = [];
 
         % Simulate beliefs using fitted values
-        act_prob_time1=[];
-        act_prob_time2 = [];
-        model_acc_time1 = [];
-        model_acc_time2 = [];
+act_prob_time1=[];
+act_prob_time2 = [];
+model_acc_time1 = [];
+model_acc_time2 = [];
 
-        u = DCM.U;
-        y = DCM.Y;
+u = DCM.U;
+y = DCM.Y;
 
 
 
-        num_trials = size(u,2);
-        num_blocks = floor(num_trials/30);
-        if num_trials == 1
-            block_size = 1;
-        else
-            block_size = 30;
-        end
+num_trials = size(u,2);
+num_blocks = floor(num_trials/30);
+if num_trials == 1
+    block_size = 1;
+else
+    block_size = 30;
+end
 
-        trialinfo = DCM.M.trialinfo;
+trialinfo = DCM.M.trialinfo;
 
 
         % Each block is separate -- effectively resetting beliefs at the start of
         % each block. 
-        for idx_block = 1:num_blocks
+for idx_block = 1:num_blocks
             %priors = posteriors;
             %MDP     =
             %advise_gen_model(trialinfo(30*idx_block-29:30*idx_block,:),priors);
             %old model
 
-            if (num_trials == 1)
-                outcomes = u;
-                actions = y;
-                MDP.o  = outcomes{1};
-                MDP.u  = actions{1};
-            else
-                outcomes = u(30*idx_block-29:30*idx_block);
-                actions  = y(30*idx_block-29:30*idx_block);
-                for idx_trial = 1:30
-                    MDP(idx_trial).o = outcomes{idx_trial};
-                    MDP(idx_trial).u = actions{idx_trial};
-                    MDP(idx_trial).reaction_times = DCM.reaction_times{idx_trial};
-                    task.true_p_right(idx_trial) = 1-str2double(trialinfo{(idx_block-1)*30+idx_trial,2});
-                    task.true_p_a(idx_trial) = str2double(trialinfo{(idx_block-1)*30+idx_trial,1});
-                end
-                if strcmp(trialinfo{idx_block*30-29,3}, '80')
-                    task.block_type = "LL";
-                else
-                    task.block_type = "SL";
-                end
-            end
+    if (num_trials == 1)
+        outcomes = u;
+        actions = y;
+        MDP.o  = outcomes{1};
+        MDP.u  = actions{1};
+    else
+        outcomes = u(30*idx_block-29:30*idx_block);
+        actions  = y(30*idx_block-29:30*idx_block);
+        for idx_trial = 1:30
+            MDP(idx_trial).o = outcomes{idx_trial};
+            MDP(idx_trial).u = actions{idx_trial};
+            MDP(idx_trial).reaction_times = DCM.reaction_times{idx_trial};
+            task.true_p_right(idx_trial) = 1-str2double(trialinfo{(idx_block-1)*30+idx_trial,2});
+            task.true_p_a(idx_trial) = str2double(trialinfo{(idx_block-1)*30+idx_trial,1});
+        end
+        if strcmp(trialinfo{idx_block*30-29,3}, '80')
+            task.block_type = "LL";
+        else
+            task.block_type = "SL";
+        end
+    end
 
             % solve MDP and accumulate log-likelihood
             %--------------------------------------------------------------------------
@@ -252,30 +219,31 @@ end
              %MDPs  = spm_MDP_VB_X_advice(MDP); 
              %MDPs  = spm_MDP_VB_X_advice_no_message_passing(MDP); 
              % MDPs  = spm_MDP_VB_X_advice_no_message_passing_faster(MDP); 
-             MDPs  = Simple_Advice_Model_CMG(task, MDP,params, 0);
+     MDPs  = Simple_Advice_Model_CMG(task, MDP,params, 0);
+ 
              
 
              % bandit was chosen
-             for j = 1:numel(actions)
-                if actions{j}(2,1) ~= 2
+     for j = 1:numel(actions)
+        if actions{j}(2,1) ~= 2
                    %act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
-                   action_prob = MDPs.blockwise.action_probs(actions{j}(2,1)-1,1,j);
-                   act_prob_time1 = [act_prob_time1 action_prob]; 
+           action_prob = MDPs.blockwise.action_probs(actions{j}(2,1)-1,1,j);
+           act_prob_time1 = [act_prob_time1 action_prob]; 
 %                    if MDPs(j).P(1,actions{j}(2,1),1)==max(MDPs(j).P(:,:,1))
 %                        model_acc_time1 = [model_acc_time1 1];
 %                    else
 %                        model_acc_time1 = [model_acc_time1 0];
 %                    end
-                    if action_prob == max(MDPs.blockwise.action_probs(:,1,j))
-                        model_acc_time1 = [model_acc_time1 1];
-                    else
-                        model_acc_time1 = [model_acc_time1 0];
-                    end
+            if action_prob == max(MDPs.blockwise.action_probs(:,1,j))
+                model_acc_time1 = [model_acc_time1 1];
+            else
+                model_acc_time1 = [model_acc_time1 0];
+            end
 
-                else % when advisor was chosen
-                   prob_choose_advisor = MDPs.blockwise.action_probs(1,1,j); 
-                   prob_choose_bandit = MDPs.blockwise.action_probs(actions{j}(2,2)-1,2,j); 
-                   act_prob_time1 = [act_prob_time1 prob_choose_advisor];
+        else % when advisor was chosen
+           prob_choose_advisor = MDPs.blockwise.action_probs(1,1,j); 
+           prob_choose_bandit = MDPs.blockwise.action_probs(actions{j}(2,2)-1,2,j); 
+                    act_prob_time1 = [act_prob_time1 prob_choose_advisor];
                    act_prob_time2 = [act_prob_time2 prob_choose_bandit];
                    
                    %act_prob_time1 = [act_prob_time1 MDPs(j).P(1,actions{j}(2,1),1)];
