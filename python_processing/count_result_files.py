@@ -20,10 +20,22 @@ def find_incomplete_runs(num_indices):
             uuid, idx = match.groups()
             uuid_idx_map[uuid].append(int(idx))  # Convert idx to integer for easier sorting
 
+    # Track counts of matching and non-matching UUIDs
+    match_count = 0
+    unmatch_count = 0
+
     # Print UUIDs and indices only if the length of indices doesn't match the argument
     for uuid, idx_list in uuid_idx_map.items():
-        if len(idx_list) != num_indices:
+        if len(idx_list) == num_indices:
+            match_count += 1
+        else:
+            unmatch_count += 1
             print(f"UUID: {uuid}, Indices run: {sorted(idx_list)}")
+
+    # Summary of match and unmatch counts
+    print("\nSummary:")
+    print(f"Total UUIDs with matching indices count ({num_indices}): {match_count}")
+    print(f"Total UUIDs with non-matching indices count: {unmatch_count}")
 
 # Set up argument parsing
 if __name__ == "__main__":
