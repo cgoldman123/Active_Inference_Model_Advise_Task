@@ -1,5 +1,5 @@
 % README File
-
+PLEASE NOTE THIS CODE IS CURRENTLY IN DEVELOPMENT
 main_advise.m is the main file for fitting and simulating behavior in the Advise (Epistemic T-Maze) Task!
 
 Note that spm12 must be downloaded and the path must be added in main_advise.m (https://www.fil.ion.ucl.ac.uk/spm/software/spm12/)
