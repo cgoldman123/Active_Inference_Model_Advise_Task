@@ -18,7 +18,7 @@ EG_SUBJECT = false;
 
 % SETTINGS
 % Subject identifier for the test or experiment
-FIT_SUBJECT = '';
+FIT_SUBJECT = '5590a34cfdf99b729d4f69dc';
 % ROOT:
 % If ROOT is not assigned (i.e., empty), the script will derive the root 
 % path based on the location of the main file.
@@ -27,14 +27,11 @@ ROOT = '';
 % If RES_PATH is not assigned (i.e., empty), it will be auto-generated relative to ROOT.
 % If RES_PATH is a relative path, it will be appended to the ROOT path.
 RES_PATH = '/mnt/dell_storage/labs/rsmith/lab-members/fli/advise_task/results';
-% INPUT_PATH:
-% The folder path where the subject file is located. If INPUT_PATH is a relative path,
-% it will be appended to the ROOT path.
-INPUT_PATH = '/mnt/dell_storage/labs/NPC/DataSink/StimTool_Online/WB_Advice';
+
 % IDX_CANDIDATE:
 % This will define which candidate (set of parameters) is currently in use
 % Modify this value to switch between different candidates (1 to 10 in this case)
-IDX_CANDIDATE = 0; % Default to candidate 1, can be changed dynamically
+IDX_CANDIDATE = 1; % Default to candidate 1, can be changed dynamically
 
 
 
@@ -63,7 +60,7 @@ if isempty(FIT_SUBJECT)
     FIT_SUBJECT = getenv('FIT_SUBJECT');
 end
 
-IDX_CANDIDATE = 0;
+% IDX_CANDIDATE = 0;
 
 if IDX_CANDIDATE < 1 || IDX_CANDIDATE > 10
     env_value = getenv('IDX_CANDIDATE');
@@ -81,6 +78,17 @@ elseif strcmp(env_sys, 'cluster') && strcmp(RES_PATH, 'env_var')
 elseif ~isAbsolutePath(RES_PATH)
     RES_PATH = fullfile(ROOT, RES_PATH);
 end
+
+
+% INPUT_PATH:
+% The folder path where the subject file is located. If INPUT_PATH is a relative path,
+% it will be appended to the ROOT path.
+if strcmp(env_sys,'pc')
+    INPUT_PATH = 'L:/NPC/DataSink/StimTool_Online/WB_Advice';
+else
+    INPUT_PATH = '/mnt/dell_storage/labs/NPC/DataSink/StimTool_Online/WB_Advice';
+end
+    
 
 % Check and handle INPUT_PATH
 if isempty(INPUT_PATH)
@@ -275,7 +283,7 @@ if FIT && ~SIM
     % Example: fit_model(candidate_params);
 
 elseif FIT && SIM
-    if strcmp(env_sys,'mac')|| strcmp(env_sys, 'cluster')
+    if strcmp(env_sys,'mac')|| strcmp(env_sys, 'cluster') || strcmp(env_sys,'pc')
         [fit_results, DCM] = Advice_fit_prolific(FIT_SUBJECT, INPUT_PATH, params, fields, PLOT);
     else
         [fit_results, DCM] = Advice_fit(FIT_SUBJECT, INPUT_PATH, params, fields, PLOT);
